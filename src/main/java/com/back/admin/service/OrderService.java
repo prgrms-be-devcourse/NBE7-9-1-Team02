@@ -1,28 +1,26 @@
 package com.back.admin.service;
 
 import com.back.admin.domain.model.Order;
-import com.back.admin.domain.model.OrderProduct;
 import com.back.admin.domain.model.OrderStatus;
-import jakarta.annotation.PostConstruct;
+import com.back.admin.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
-    private List<Order> orders = new ArrayList<>();
+    private final OrderRepository orderRepository;
 
-    public List<Order> findAllOrders() {
-        return orders;
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 
-    public List<Order> findOrdersByStatus(OrderStatus status) {
-        return orders.stream()
-                .filter(o -> o.getStatus() == status)
-                .collect(Collectors.toList());
+    // 상태별 주문 조회
+    public List<Order> getOrdersByStatus(OrderStatus status) {
+        return orderRepository.findByStatus(status);
     }
 }

@@ -18,15 +18,15 @@
            class="btn">전체</a>
 
         <a th:href="@{/admin/orders(status=PAID)}"
-           th:classappend="${currentStatus != null and currentStatus.name() == 'PAID'} ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           th:classappend="${currentStatus?.name()} == 'PAID' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
            class="btn">결제완료</a>
 
         <a th:href="@{/admin/orders(status=DELIVERING)}"
-           th:classappend="${currentStatus != null and currentStatus.name() == 'DELIVERING'} ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           th:classappend="${currentStatus?.name()}  == 'DELIVERING' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
            class="btn">배송중</a>
 
         <a th:href="@{/admin/orders(status=DELIVERED)}"
-           th:classappend="${currentStatus != null and currentStatus.name() == 'DELIVERED'} ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           th:classappend="${currentStatus?.name()} == 'DELIVERED' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
            class="btn">배송완료</a>
     </div>
 
@@ -43,20 +43,19 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="order : ${orders}">
-            <td th:text="${order.id}"></td>
-            <td th:text="${order.email}"></td>
-            <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
-            <td>
-                <ul class="list-unstyled mb-0">
-                    <li th:each="item : ${order.orderProducts}"> <!-- 고객별 모든 주문 상품을 보여주기 위한 부분 -->
-                        <span th:text="${item.name}"></span> : <span th:text="${item.quantity}"></span>
-                    </li>
-                </ul>
-            </td>
-            <td th:text="${order.totalPrice} + '원'"></td>
-            <td th:text="${order.status.description}"></td>
-        </tr>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.email}"></td>
+                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <ul class="list-unstyled mb-0">
+                      <li th:each="item : ${order.orderProducts}"> <!-- 고객별 모든 주문 상품을 보여주기 위한 부분 -->
+                          <span th:text="${item.product.name}"></span> : <span th:text="${item.orderQuantity}"></span>
+                      </li>
+                    </ul>
+                </td>
+                <td th:text="${order.totalPrice}"></td>
+             </tr>
         </tbody>
     </table>
 </div>
