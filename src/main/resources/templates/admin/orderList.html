@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 목록</title>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/admin/css/bootstrap.min.css}"
+          href="../../static/admin/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">주문 목록</h1>
+
+    <!-- 상태 필터 버튼 -->
+    <div class="mb-3">
+        <a th:href="@{/admin/orders}"
+           th:classappend="${currentStatus} == null ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">전체</a>
+
+        <a th:href="@{/admin/orders(status=PAID)}"
+           th:classappend="${currentStatus != null and currentStatus.name() == 'PAID'} ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">결제완료</a>
+
+        <a th:href="@{/admin/orders(status=DELIVERING)}"
+           th:classappend="${currentStatus != null and currentStatus.name() == 'DELIVERING'} ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">배송중</a>
+
+        <a th:href="@{/admin/orders(status=DELIVERED)}"
+           th:classappend="${currentStatus != null and currentStatus.name() == 'DELIVERED'} ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">배송완료</a>
+    </div>
+
+    <!-- 주문 테이블 -->
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+        <tr>
+            <th>주문 번호</th>
+            <th>고객 이메일</th>
+            <th>주문 일시</th>
+            <th>상품</th>
+            <th>총 금액</th>
+            <th>주문 상태</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.email}"></td>
+            <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <ul class="list-unstyled mb-0">
+                    <li th:each="item : ${order.orderProducts}"> <!-- 고객별 모든 주문 상품을 보여주기 위한 부분 -->
+                        <span th:text="${item.name}"></span> : <span th:text="${item.quantity}"></span>
+                    </li>
+                </ul>
+            </td>
+            <td th:text="${order.totalPrice} + '원'"></td>
+            <td th:text="${order.status.description}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

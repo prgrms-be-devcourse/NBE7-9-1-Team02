@@ -1,7 +1,10 @@
 package com.back.admin;
 
+import lombok.Getter;
+
+@Getter
 public enum OrderStatus {
-    PAYMENT_COMPLETED("결제완료"),
+    PAID("결제완료"),
     DELIVERING("배송중"),
     DELIVERED("배송완료");
 
@@ -9,10 +12,5 @@ public enum OrderStatus {
 
     OrderStatus(String description) {
         this.description = description;
-    }
-
-    // getter
-    public String getDescription() {
-        return description;
     }
 }
