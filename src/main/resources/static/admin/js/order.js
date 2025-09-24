@@ -1,33 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const rows = document.querySelectorAll("table tbody tr");
+    const buttons = document.querySelectorAll(".order-detail-btn");
 
-    rows.forEach(row => {
-        row.addEventListener("click", () => {
-            const orderId = row.querySelector("td").innerText; // 첫 번째 칸이 주문번호라 가정
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const orderId = btn.dataset.orderId;
             loadOrderDetail(orderId);
         });
     });
 });
 
 function loadOrderDetail(orderId) {
-    fetch(`/admin/api/orders/${orderId}`)  // AdminOrderApiController에서 주문 상세 조회
+    fetch(`/admin/orders/${orderId}/detail`)
         .then(res => res.json())
         .then(data => {
             renderOrderDetail(data);
             const modal = new bootstrap.Modal(document.getElementById("orderDetailModal"));
             modal.show();
         })
-        .catch(err => {
-            console.error("주문 상세 불러오기 실패:", err);
-        });
+        .catch(err => console.error("주문 상세 불러오기 실패:", err));
 }
+
+const statusMap = {
+    PAID: "결제완료",
+    SHIPPED: "배송중",
+    DELIVERED: "배송완료"
+};
 
 function renderOrderDetail(order) {
     let html = `
     <p><strong>주문번호:</strong> ${order.orderId}</p>
     <p><strong>이메일:</strong> ${order.email}</p>
     <p><strong>주문일시:</strong> ${order.orderDate}</p>
-    <p><strong>상태:</strong> <span id="orderStatus">${order.status}</span></p>
+    <p><strong>배송상태:</strong> <span id="orderStatus">${statusMap[order.status]}</span></p>
     <p><strong>총 금액:</strong> ${order.totalPrice} 원</p>
     <hr>
     <h5>상품 목록</h5>
@@ -38,7 +42,6 @@ function renderOrderDetail(order) {
 
     document.getElementById("orderDetailContent").innerHTML = html;
 
-    // 버튼 상태 제어
     const shipBtn = document.getElementById("shipBtn");
     const cancelBtn = document.getElementById("cancelBtn");
 
