@@ -21,8 +21,8 @@
            th:classappend="${currentStatus?.name()} == 'PAID' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
            class="btn">결제완료</a>
 
-        <a th:href="@{/admin/orders(status=DELIVERING)}"
-           th:classappend="${currentStatus?.name()}  == 'DELIVERING' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+        <a th:href="@{/admin/orders(status=SHIPPED)}"
+           th:classappend="${currentStatus?.name()}  == 'SHIPPED' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
            class="btn">배송중</a>
 
         <a th:href="@{/admin/orders(status=DELIVERED)}"
