@@ -6,6 +6,8 @@
     <link rel="stylesheet" type="text/css"
           th:href="@{/admin/css/bootstrap.min.css}"
           href="../../static/admin/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/order.js"></script>
 </head>
 <body>
 <div class="container mt-5">
@@ -55,10 +57,35 @@
                     </ul>
                 </td>
                 <td th:text="${order.totalPrice}"></td>
-                <td th:text="${order.status}"></td>
+                <td th:text="${order.status.description}"></td>
              </tr>
         </tbody>
     </table>
 </div>
+
+<!-- 주문 상세 모달 -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">주문 상세</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 주문 상세 내용이 여기에 동적으로 들어옴 -->
+                <div id="orderDetailContent">
+                    로딩중...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- 배송하기 버튼 -->
+                <button id="shipBtn" class="btn btn-primary">배송하기</button>
+                <!-- 취소하기 버튼은 JS에서 동적으로 보이도록 -->
+                <button id="cancelBtn" class="btn btn-danger d-none">취소하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
