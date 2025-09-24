@@ -1,4 +1,4 @@
-package com.back.admin;
+package com.back.admin.domain.model;
 
 import lombok.Getter;
 

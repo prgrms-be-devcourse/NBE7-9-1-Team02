@@ -8,6 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update   # 운영에선 validate 권장
+    show-sql: true       # 실행되는 쿼리 출력
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

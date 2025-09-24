@@ -1,0 +1,44 @@
+package com.back.admin.domain.model;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor // JPA용 기본 생성자
+@Entity
+@Table(name = "orders") // order가 MySQL 예약어라서 이름 바꿔주는게 안전
+public class Order { // 주문 정보
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="order_id")
+    private Integer id;                // 주문 번호
+
+    private String email;           // 고객 이메일
+
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;// 주문 일시
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;     // 주문 상태
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderProduct> orderProducts; // 주문 상품
+
+    private Long totalPrice;
+
+    @PrePersist
+    @PreUpdate
+    public void calculateTotalPrice() {
+        this.totalPrice = orderProducts.stream()
+                .mapToLong(op -> (long) op.getProduct().getPrice() * op.getOrderQuantity())
+                .sum();
+    }
+}
+
