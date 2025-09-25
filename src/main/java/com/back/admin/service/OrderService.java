@@ -8,10 +8,7 @@ import com.back.admin.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +17,7 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final ZoneId ZONE = ZoneId.of("Asia/Seoul");
+    private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9); // Asia/Seoul 기준
 
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
@@ -30,12 +27,10 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    // 상태별 주문 조회
     public List<Order> getOrdersByStatus(OrderStatus status) {
         return orderRepository.findByStatus(status);
     }
 
-    // 상세 DTO 변환 (OrderDetailDto 생성부는 canCancel 포함)
     public OrderDetailDto getOrderDetail(Integer orderId) {
         Order order = orderRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
@@ -50,66 +45,65 @@ public class OrderService {
                 order.getStatus().name(), order.getTotalPrice(), products, canCancel);
     }
 
-    // 배송하기 (관리자 클릭) — shippedAt 기록
+    // 배송하기 — shippedAt 기록
     public Order shipOrder(Integer orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new IllegalArgumentException("주문 없음: " + orderId));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
+
         if (order.getStatus() != OrderStatus.PAID) {
             throw new IllegalStateException("배송 상태로 변경할 수 없는 주문입니다.");
         }
+
         order.setStatus(OrderStatus.SHIPPED);
-        order.setShippedAt(ZonedDateTime.now(ZONE)); // 배송 시작 시각 기록
+        order.setShippedAt(OffsetDateTime.now(KST_OFFSET)); // OffsetDateTime으로 변경
         return order;
     }
 
-    // 취소(배송중 -> 결제완료) - 취소 가능 시간 체크
+    // 배송 취소
     public Order cancelShipment(Integer orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new IllegalArgumentException("주문 없음: " + orderId));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
+
         if (order.getStatus() != OrderStatus.SHIPPED) {
             throw new IllegalStateException("취소할 수 없습니다.");
         }
         if (!canCancelShipment(order)) {
             throw new IllegalStateException("이미 취소 불가능한 시간입니다.");
         }
+
         order.setStatus(OrderStatus.PAID);
-        order.setShippedAt(null); // 배송 취소 되면 shippedAt 초기화
+        order.setShippedAt(null); // 배송 취소 시 초기화
         return order;
     }
 
-    // 14:00 스케줄에서 호출 -> SHIPPED => DELIVERED
     public void deliverAllShippedOrders() {
         List<Order> list = orderRepository.findByStatus(OrderStatus.SHIPPED);
         for (Order o : list) {
             o.setStatus(OrderStatus.DELIVERED);
-            // (선택) o.setDeliveredAt(ZonedDateTime.now(ZONE));
         }
         orderRepository.saveAll(list);
     }
 
-    // 취소 허용 여부 판단
-    // 정책: 관리자(또는 누가) '배송하기' 클릭해 shippedAt 기록 -> 그 시점 기준으로
-    // 다음으로 올 '14:00' (같은 날 14:00 이거나 다음날 14:00) 이전이면 취소 허용.
+    // 취소 가능 여부 판단
     private boolean canCancelShipment(Order order) {
         if (order.getStatus() != OrderStatus.SHIPPED) return false;
-        ZonedDateTime now = ZonedDateTime.now(ZONE);
-        ZonedDateTime shippedAt = order.getShippedAt();
+        OffsetDateTime now = OffsetDateTime.now(KST_OFFSET);
+        OffsetDateTime shippedAt = order.getShippedAt();
         if (shippedAt == null) return false;
 
-        ZonedDateTime shippedInZone = shippedAt.withZoneSameInstant(ZONE);
+        // shippedAt을 KST 기준으로 변환
+        OffsetDateTime shippedInKST = shippedAt.withOffsetSameInstant(KST_OFFSET);
         LocalTime cutoffClock = LocalTime.of(14, 0);
 
-        // scheduledDelivery: shipped 당일 14:00 (shipped 시간이 14:00 이전 포함) 아니면 다음날 14:00
-        ZonedDateTime scheduledDelivery;
-        LocalTime shippedTime = shippedInZone.toLocalTime();
+        OffsetDateTime scheduledDelivery;
+        LocalTime shippedTime = shippedInKST.toLocalTime();
 
-        if (!shippedTime.isAfter(cutoffClock)) { // shipped time <= 14:00 -> 배송은 같은날 14:00에 이뤄짐
-            scheduledDelivery = shippedInZone.withHour(14).withMinute(0).withSecond(0).withNano(0);
-        } else { // shipped after 14:00 -> 다음날 14:00에 배송 처리
-            scheduledDelivery = shippedInZone.plusDays(1).withHour(14).withMinute(0).withSecond(0).withNano(0);
+        if (!shippedTime.isAfter(cutoffClock)) { // 14:00 이전이면 당일 14:00
+            scheduledDelivery = shippedInKST.withHour(14).withMinute(0).withSecond(0).withNano(0);
+        } else { // 이후면 다음날 14:00
+            scheduledDelivery = shippedInKST.plusDays(1).withHour(14).withMinute(0).withSecond(0).withNano(0);
         }
 
-        // 취소 허용: 현재 시간이 scheduledDelivery 이전인 경우
         return now.isBefore(scheduledDelivery);
     }
 }
