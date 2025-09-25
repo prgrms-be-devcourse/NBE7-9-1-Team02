@@ -1,13 +1,11 @@
 package com.back.controller;
 
-import com.back.domain.Product;
 import com.back.repository.ProductRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-@RestController
+@Controller   // ✅ RestController → Controller 로 변경
 public class ProductController {
 
     private final ProductRepository productRepository;
@@ -16,9 +14,12 @@ public class ProductController {
         this.productRepository = productRepository;
     }
 
-    // 전체 상품 조회
+    // ✅ 상품 목록을 HTML 페이지(products.html)로 전달
     @GetMapping("/products")
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public String showProducts(Model model) {
+        model.addAttribute("products", productRepository.findAll());
+        model.addAttribute("orderPageUrl", "/order"); // 주문 페이지 이동 버튼 경로
+        return "products";  // → templates/products.html 로 이동
     }
 }
+

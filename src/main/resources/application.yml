@@ -12,3 +12,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+        app:
+          order-page-url: http://localhost:8081/order   # <- 팀 주문 URL로 수정해서 사용
+          # 팀원이 같은 서버에서 /order 라우트를 쓰면 http://localhost:8080/order 로 적어도 된다.
+
