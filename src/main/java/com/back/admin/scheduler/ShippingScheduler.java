@@ -12,10 +12,15 @@ public class ShippingScheduler {
         this.orderService = orderService;
     }
 
-    // 매일 14:00 (Asia/Seoul) 에 실행
+    // 실제 운영: 매일 14:00 (서울)
     @Scheduled(cron = "0 0 14 * * *", zone = "Asia/Seoul")
-    public void doDeliveriesAtTwoPm() {
+    public void deliverShipped() {
         orderService.deliverAllShippedOrders();
-        // 필요 시 로그/모니터링 추가
     }
+
+    // 테스트 시: 매분 실행 (테스트 끝나면 주석/제거)
+    // @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
+    // public void deliverShippedEveryMinuteForTest() {
+    //     orderService.deliverAllShippedOrders();
+    // }
 }

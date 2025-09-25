@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Getter
@@ -33,6 +34,12 @@ public class Order { // 주문 정보
 
     private Long totalPrice;
 
+    // 배송 시작 시각 (관리자가 '배송하기' 클릭한 시점)
+    @Column(name = "shipped_at")
+    private ZonedDateTime shippedAt;
+
+
+    // 이 부분 그냥 order에 있는 totalPrice 가져오면 됨
     @PrePersist
     @PreUpdate
     public void calculateTotalPrice() {
