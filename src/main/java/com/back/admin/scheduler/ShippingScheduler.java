@@ -17,10 +17,4 @@ public class ShippingScheduler {
     public void deliverShipped() {
         orderService.deliverAllShippedOrders();
     }
-
-    // 테스트 시: 매분 실행 (테스트 끝나면 주석/제거)
-    // @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
-    // public void deliverShippedEveryMinuteForTest() {
-    //     orderService.deliverAllShippedOrders();
-    // }
 }
