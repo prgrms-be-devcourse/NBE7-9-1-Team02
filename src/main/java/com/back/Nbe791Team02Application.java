@@ -2,8 +2,6 @@ package com.back;   // ✅ 맨 위에 이 줄만 추가
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import com.back.domain.product.repository.ProductRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication

@@ -42,10 +42,10 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
-    public Product(String name, Integer price, Integer quantity, String imageUrl) {
+    public Product(String name, Integer price, Integer stock, String imageUrl) {
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+        this.stock = stock;
         this.imageUrl = imageUrl;
     }
 }

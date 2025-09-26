@@ -63,7 +63,7 @@ public class OrderController {
         }
 
         Orders createOrder = orderService.payment(orderForm);
-        return "redirect:/orders/"+ createOrder.getOrderId() + "/completed"; //올바르게 주문이 완료되면 결제완료 페이지 이동
+        return "redirect:/orders/"+ createOrder.getId() + "/completed"; //올바르게 주문이 완료되면 결제완료 페이지 이동
     }
 
     @GetMapping("/{orderId}/completed")
