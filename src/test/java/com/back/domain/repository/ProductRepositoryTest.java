@@ -26,7 +26,7 @@ class ProductRepositoryTest {
         Product saved = productRepository.save(product);
 
         // then
-        Product found = productRepository.findById(saved.getId()).orElseThrow();
+        Product found = productRepository.findById(saved.getProductId()).orElseThrow();
         assertThat(found.getName()).isEqualTo("테스트 커피");
     }
 }

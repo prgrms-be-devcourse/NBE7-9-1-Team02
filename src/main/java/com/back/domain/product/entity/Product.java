@@ -27,8 +27,8 @@ public class Product {
     @Column(nullable = false)
     private Integer price;
 
-    @Column(nullable = false)
-    private Integer quantity;
+//    @Column(nullable = false)
+//    private Integer quantity;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -41,4 +41,11 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProducts = new ArrayList<>();
+
+    public Product(String name, Integer price, Integer stock, String imageUrl) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        this.imageUrl = imageUrl;
+    }
 }
