@@ -1,6 +1,5 @@
 package com.back.domain.grobal.initData;
 
-
 import com.back.domain.product.entity.Product;
 import com.back.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,10 @@
-package com.back.admin.domain.model;
+package com.back.domain.domain.model;
 
-import com.back.admin.repository.OrderRepository;
-import com.back.admin.repository.ProductRepository;
+import com.back.domain.order.entity.OrderProduct;
+import com.back.domain.order.entity.Orders;
+import com.back.domain.order.repository.OrdersRepository;
+import com.back.domain.product.repository.ProductRepository;
+import com.back.domain.product.entity.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class OrderProductTest {
     @Autowired
-    private OrderRepository orderRepository;
+    private OrdersRepository orderRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -35,7 +38,7 @@ class OrderProductTest {
         productRepository.save(rinse);
 
         // 2. 주문 생성
-        Order order = new Order();
+        Orders order = new Orders();
         order.setCustomerName("김민지");
         order.setEmail("test@naver.com");
         order.setOrderDate(LocalDateTime.now());
@@ -45,13 +48,13 @@ class OrderProductTest {
         OrderProduct op1 = new OrderProduct();
         op1.setOrder(order);
         op1.setProduct(shampoo);
-        op1.setOrderQuantity(2);
+        op1.setQuantity(2);
         op1.setPrice(5000);
 
         OrderProduct op2 = new OrderProduct();
         op2.setOrder(order);
         op2.setProduct(rinse);
-        op2.setOrderQuantity(1);
+        op2.setQuantity(1);
         op2.setPrice(3000);
 
         order.setOrderProducts(List.of(op1, op2));
@@ -60,7 +63,7 @@ class OrderProductTest {
         orderRepository.save(order);
 
         // 4. 조회 및 상품 요약 확인
-        Order savedOrder = orderRepository.findById(order.getId()).orElseThrow();
+        Orders savedOrder = orderRepository.findById(order.getId()).orElseThrow();
 
         String summary = savedOrder.getOrderProducts().size() > 0
                 ? savedOrder.getOrderProducts().get(0).getProduct().getName() + " 외 " +

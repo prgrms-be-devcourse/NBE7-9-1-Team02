@@ -1,8 +1,8 @@
-package com.back.admin.scheduler;
+package com.back.domain.scheduler;
 
-import com.back.admin.domain.model.Order;
-import com.back.admin.domain.model.OrderStatus;
-import com.back.admin.repository.OrderRepository;
+import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.OrderStatus;
+import com.back.domain.order.repository.OrdersRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ShippingSchedulerTest {
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrdersRepository orderRepository;
 
     @Autowired
     private ShippingScheduler shippingScheduler;
@@ -24,7 +24,7 @@ class ShippingSchedulerTest {
     @Test
     void testDeliverShippedOrders() {
         // given - 배송중인 주문 저장
-        Order order = new Order();
+        Orders order = new Orders();
         order.setEmail("scheduler@test.com");
         order.setStatus(OrderStatus.SHIPPED);
         order.setTotalPrice(20000L);
@@ -39,21 +39,21 @@ class ShippingSchedulerTest {
         shippingScheduler.deliverShipped();
 
         // then - 상태가 DELIVERED로 변경됐는지 확인
-        Order found = orderRepository.findById(order.getId()).orElseThrow();
+        Orders found = orderRepository.findById(order.getId()).orElseThrow();
         assertThat(found.getStatus()).isEqualTo(OrderStatus.DELIVERED);
     }
 
     @Test
     void testDeliverMultipleShippedOrders() {
         // given
-        Order o1 = new Order();
+        Orders o1 = new Orders();
         o1.setEmail("s1@test.com");
         o1.setStatus(OrderStatus.SHIPPED);
         o1.setTotalPrice(10000L);
         o1.setOrderDate(LocalDateTime.now());
         o1.setShippedAt(OffsetDateTime.now());
 
-        Order o2 = new Order();
+        Orders o2 = new Orders();
         o2.setEmail("s2@test.com");
         o2.setStatus(OrderStatus.SHIPPED);
         o2.setTotalPrice(20000L);
