@@ -1,8 +1,9 @@
-package com.back.admin.service;
+package com.back.domain.service;
 
-import com.back.admin.domain.model.Order;
-import com.back.admin.domain.model.OrderStatus;
-import com.back.admin.repository.OrderRepository;
+import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.OrderStatus;
+import com.back.domain.order.repository.OrdersRepository;
+import com.back.domain.order.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,13 @@ class OrderServiceTest {
     private OrderService orderService;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrdersRepository orderRepository;
 
     @Test
     @DisplayName("14시에 배송중(SHIPPED) 주문이 배달완료(DELIVERED)로 바뀌는지")
     void testDeliverAllShippedOrders() {
         // 1. 배송중 상태의 주문 생성
-        Order order = new Order();
+        Orders order = new Orders();
         order.setEmail("delivery@test.com");
         order.setTotalPrice(20000L);
         order.setOrderDate(LocalDateTime.now());
@@ -41,7 +42,7 @@ class OrderServiceTest {
         orderService.deliverAllShippedOrders();
 
         // 3. DB에서 다시 조회
-        Order updatedOrder = orderRepository.findById(order.getId())
+        Orders updatedOrder = orderRepository.findById(order.getId())
                 .orElseThrow();
 
         // 4. 상태 확인
