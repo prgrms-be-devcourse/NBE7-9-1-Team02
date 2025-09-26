@@ -26,10 +26,10 @@ public class BaseInitData {
             if(productService.count() == 0) {
 
                 // 상품 객체 생성
-                Product serrado = new Product("Brazil Serrado Do Capearao", 5000, 20, "serrado.jpg");
-                Product narino = new Product("Columbia Narino", 5500, 10, "narino.jpg");
-                Product quindio = new Product("Columbia Quindio", 6000, 15, "quindio.jpg");
-                Product sidamo = new Product("Ethiopia Sidamo", 6500, 12, "sidamo.jpg");
+                Product serrado = new Product("Brazil Serrado Do Capearao", 5000, 20, "brazil-serrado.jpg");
+                Product narino = new Product("Columbia Narino", 5500, 10, "colombia-narino.jpg");
+                Product quindio = new Product("Columbia Quindio", 6000, 15, "colombia-quindio.jpg");
+                Product sidamo = new Product("Ethiopia Sidamo", 6500, 12, "ethiopia-sidamo.jpg");
 
                 // DB에 저장
                 productService.saveAll(List.of(narino, quindio, serrado, sidamo));

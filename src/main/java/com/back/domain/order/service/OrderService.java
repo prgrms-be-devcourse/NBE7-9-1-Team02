@@ -37,6 +37,13 @@ public class OrderService {
         for (OrderItemDto item : orderForm.getOrderItems()) {
             Product product = productRepository.findById(item.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("상품 없음 id=" + item.getProductId()));
+            if (product.getStock() < item.getQuantity()) {
+                throw new IllegalStateException(product.getName() + " 상품의 재고가 부족합니다.");
+            }
+
+            //  재고 차감
+            product.setStock(product.getStock() - item.getQuantity());
+
             totalPrice += product.getPrice() * item.getQuantity();
         }
         if (totalPrice != orderForm.getTotalPrice()) {

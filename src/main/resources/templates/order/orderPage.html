@@ -53,7 +53,7 @@
                  th:data-name="${product.name}"
                  th:data-price="${product.price}"
                  th:data-stock="${product.stock}"> <div class="product-info">
-                <img th:src="@{/images/{imageName}(imageName=${product.imageUrl})}" alt="커피콩">
+                <img th:src="@{/img/coffee/{imageName}(imageName=${product.imageUrl})}" alt="커피콩">
                 <div class="product-details">
                     <p class="name" th:text="${product.name}">상품 이름</p>
                     <p class="desc"> 향긋한 원두 커피</p>
