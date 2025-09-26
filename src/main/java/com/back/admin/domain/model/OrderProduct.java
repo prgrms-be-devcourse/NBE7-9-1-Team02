@@ -28,5 +28,6 @@ public class OrderProduct {  // 주문 상품 정보
     @Column(name = "order_quantity")
     private Integer orderQuantity;
 
-    // price는 생략
+    @Column(name = "price")
+    private Integer price;
 }

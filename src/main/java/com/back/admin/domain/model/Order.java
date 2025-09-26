@@ -21,7 +21,6 @@ public class Order { // 주문 정보
     @Column(name="order_id")
     private Integer id;                // 주문 번호
 
-    private String email;           // 고객 이메일
 
     @Column(name = "order_date")
     private LocalDateTime orderDate;// 주문 일시
@@ -38,5 +37,16 @@ public class Order { // 주문 정보
     // 배송 시작 시각 (관리자가 '배송하기' 클릭한 시점)
     @Column(name = "shipped_at")
     private OffsetDateTime shippedAt;
+
+    @Column(name = "address")
+    private String address;    // 주소
+
+    @Column(name = "zipcode")
+    private Integer zipcode;   // 우편 번호
+
+    private String email;           // 고객 이메일
+
+    @Column(name = "customer_name")
+    private String customerName;   // 주문자 명
 }
 

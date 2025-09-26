@@ -41,7 +41,7 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         boolean canCancel = canCancelShipment(order);
-        return new OrderDetailDto(order.getId(), order.getEmail(), order.getOrderDate(),
+        return new OrderDetailDto(order.getId(), order.getCustomerName(), order.getEmail(), order.getAddress(), order.getZipcode(), order.getOrderDate(),
                 order.getStatus().name(), order.getTotalPrice(), products, canCancel);
     }
 
