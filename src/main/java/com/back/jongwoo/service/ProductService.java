@@ -1,6 +1,6 @@
-package com.back.service;
+package com.back.jongwoo.service;
 
-import com.back.dto.ProductDetailDto;
+import com.back.jongwoo.dto.ProductDetailDto;
 
 public interface ProductService {
     ProductDetailDto getProductDetail(Integer id);

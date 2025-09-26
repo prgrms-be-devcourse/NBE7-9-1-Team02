@@ -1,6 +1,6 @@
-package com.back.repository;
+package com.back.jongwoo.repository;
 
-import com.back.domain.ProductDetail;
+import com.back.jongwoo.ProductDetail.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

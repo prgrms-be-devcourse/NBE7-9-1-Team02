@@ -1,10 +1,10 @@
-package com.back.service;
+package com.back.jongwoo.service;
 
-import com.back.domain.Product;
-import com.back.domain.ProductDetail;
-import com.back.dto.ProductDetailDto;
-import com.back.repository.ProductRepository;
-import com.back.repository.ProductDetailRepository;
+import com.back.jongwoo.Product;
+import com.back.jongwoo.ProductDetail.ProductDetail;
+import com.back.jongwoo.dto.ProductDetailDto;
+import com.back.jongwoo.repository.ProductRepository;
+import com.back.jongwoo.repository.ProductDetailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.back.dto;
+package com.back.jongwoo.dto;
 
 import lombok.*;
 

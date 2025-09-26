@@ -1,11 +1,15 @@
-package com.back.domain;
+package com.back.domain.product.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "product_detail")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
 public class ProductDetail {
 
     @Id
@@ -13,8 +17,8 @@ public class ProductDetail {
     @Column(name = "detail_id")
     private Integer detailId;
 
-    @OneToOne
-    @JoinColumn(name = "product_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", unique = true)
     private Product product;
 
     @Column(columnDefinition = "TEXT")

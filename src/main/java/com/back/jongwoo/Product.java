@@ -1,4 +1,4 @@
-package com.back.domain;
+package com.back.jongwoo;
 
 import jakarta.persistence.*;
 

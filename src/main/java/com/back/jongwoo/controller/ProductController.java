@@ -1,8 +1,8 @@
-package com.back.controller;
+package com.back.jongwoo.controller;
 
-import com.back.dto.ProductDetailDto;
-import com.back.repository.ProductRepository;
-import com.back.service.ProductService;
+import com.back.jongwoo.dto.ProductDetailDto;
+import com.back.jongwoo.repository.ProductRepository;
+import com.back.jongwoo.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
