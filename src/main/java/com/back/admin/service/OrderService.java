@@ -5,6 +5,7 @@ import com.back.admin.domain.model.OrderStatus;
 import com.back.admin.dto.OrderDetailDto;
 import com.back.admin.dto.OrderProductDto;
 import com.back.admin.repository.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import java.time.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 public class OrderService {
@@ -80,6 +82,7 @@ public class OrderService {
         List<Order> list = orderRepository.findByStatus(OrderStatus.SHIPPED);
         for (Order o : list) {
             o.setStatus(OrderStatus.DELIVERED);
+            log.info("배송완료 처리됨: orderId=" + o.getId());
         }
         orderRepository.saveAll(list);
     }

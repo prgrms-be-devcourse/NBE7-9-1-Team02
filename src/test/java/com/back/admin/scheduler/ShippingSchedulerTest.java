@@ -30,6 +30,9 @@ class ShippingSchedulerTest {
         order.setTotalPrice(20000L);
         order.setOrderDate(LocalDateTime.now());
         order.setShippedAt(OffsetDateTime.now());
+        order.setAddress("아아시 야야구");
+        order.setZipcode(12345);
+        order.setCustomerName("dkdd");
         orderRepository.save(order);
 
         // when - 스케줄러 메서드 직접 실행
@@ -39,4 +42,35 @@ class ShippingSchedulerTest {
         Order found = orderRepository.findById(order.getId()).orElseThrow();
         assertThat(found.getStatus()).isEqualTo(OrderStatus.DELIVERED);
     }
+
+    @Test
+    void testDeliverMultipleShippedOrders() {
+        // given
+        Order o1 = new Order();
+        o1.setEmail("s1@test.com");
+        o1.setStatus(OrderStatus.SHIPPED);
+        o1.setTotalPrice(10000L);
+        o1.setOrderDate(LocalDateTime.now());
+        o1.setShippedAt(OffsetDateTime.now());
+
+        Order o2 = new Order();
+        o2.setEmail("s2@test.com");
+        o2.setStatus(OrderStatus.SHIPPED);
+        o2.setTotalPrice(20000L);
+        o2.setOrderDate(LocalDateTime.now());
+        o2.setShippedAt(OffsetDateTime.now());
+
+        orderRepository.save(o1);
+        orderRepository.save(o2);
+
+        // when
+        shippingScheduler.deliverShipped();
+
+        // then
+        assertThat(orderRepository.findById(o1.getId()).get().getStatus())
+                .isEqualTo(OrderStatus.DELIVERED);
+        assertThat(orderRepository.findById(o2.getId()).get().getStatus())
+                .isEqualTo(OrderStatus.DELIVERED);
+    }
+
 }
