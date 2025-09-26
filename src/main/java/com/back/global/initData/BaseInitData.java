@@ -1,12 +1,15 @@
 package com.back.global.initData;
 
-import com.back.domain.post.post.service.PostService;
+import com.back.product.entity.Product;
+import com.back.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -15,18 +18,22 @@ public class BaseInitData {
     @Autowired
     @Lazy
     private BaseInitData self;
-    private final PostService postService;
+    private final ProductService productService;
 
     @Bean
     ApplicationRunner initDataRunner() {
         return args -> {
-            if(postService.count() > 0) {
-                return;
-            }
+            if(productService.count() == 0) {
 
-            postService.write("제목1", "내용1");
-            postService.write("제목2", "내용2");
-            postService.write("제목3", "내용3");
+                // 상품 객체 생성
+                Product serrado = new Product("Brazil Serrado Do Capearao", 5000, 20, "serrado.jpg");
+                Product narino = new Product("Columbia Narino", 5500, 10, "narino.jpg");
+                Product quindio = new Product("Columbia Quindio", 6000, 15, "quindio.jpg");
+                Product sidamo = new Product("Ethiopia Sidamo", 6500, 12, "sidamo.jpg");
+
+                // DB에 저장
+                productService.saveAll(List.of(narino, quindio, serrado, sidamo));
+            }
         };
     }
 }
