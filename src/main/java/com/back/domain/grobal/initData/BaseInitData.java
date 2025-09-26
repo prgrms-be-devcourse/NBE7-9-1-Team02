@@ -1,7 +1,8 @@
 package com.back.domain.grobal.initData;
 
-import com.back.kyeongwon.product.entity.Product;
-import com.back.kyeongwon.product.service.ProductService;
+
+import com.back.domain.product.entity.Product;
+import com.back.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;

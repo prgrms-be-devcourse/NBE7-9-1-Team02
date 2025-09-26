@@ -1,13 +1,10 @@
 package com.back.domain.product.controller;
 
-import com.back.domain.product.dto.ProductDetailDto;
 import com.back.domain.product.repository.ProductRepository;
 import com.back.domain.product.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller   // HTML 렌더링을 위해 Controller 유지
 public class ProductController {
@@ -30,9 +27,9 @@ public class ProductController {
     }
 
     //  2) 상품 상세 조회 API (JSON 반환 → 모달에서 사용)
-    @GetMapping("/products/{id}")
-    @ResponseBody
-    public ProductDetailDto getProductDetail(@PathVariable Integer id) {
-        return productService.getProductDetail(id);
-    }
+//    @GetMapping("/products/{id}")
+//    @ResponseBody
+//    public ProductDetailDto getProductDetail(@PathVariable Integer id) {
+//        return productService.getProductDetail(id);
+//    }
 }
