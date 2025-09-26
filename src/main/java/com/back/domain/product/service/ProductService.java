@@ -1,10 +1,14 @@
 package com.back.domain.product.service;
 
+import com.back.domain.product.entity.Product;
+import com.back.domain.product.repository.ProductRepository;
 import com.back.jongwoo.ProductDetail.ProductDetail;
 import com.back.jongwoo.dto.ProductDetailDto;
 import com.back.jongwoo.repository.ProductDetailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

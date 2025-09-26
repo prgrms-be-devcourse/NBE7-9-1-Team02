@@ -1,7 +1,7 @@
 package com.back.domain.order.entity;
 
 import com.back.domain.product.entity.Product;
-import com.back.order.entity.Orders;
+import com.back.domain.order.entity.Orders;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

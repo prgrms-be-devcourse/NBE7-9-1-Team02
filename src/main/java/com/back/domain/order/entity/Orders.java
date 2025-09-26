@@ -1,6 +1,6 @@
 package com.back.domain.order.entity;
 
-import com.back.admin.domain.model.OrderStatus;
+import com.back.domain.order.entity.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
