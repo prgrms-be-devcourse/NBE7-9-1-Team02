@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 목록</title>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/admin/css/bootstrap.min.css}"
+          href="../../static/admin/css/bootstrap.min.css">
+    <script src="/admin/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div>
+    <!-- 사이트 이름 -->
+    <div class="text-center bg-light py-3 mb-4 shadow-sm">
+        <h1 class="fw-bold text-primary">Grids & Circle</h1>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="container d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-4">주문 목록</h1>
+        <button class="btn btn-primary">상품 관리</button>
+    </div>
+
+    <!-- 상태 필터 버튼 -->
+    <div class="mb-3">
+        <a th:href="@{/admin/orders}"
+           th:classappend="${currentStatus} == null ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">전체</a>
+
+        <a th:href="@{/admin/orders(status=PAID)}"
+           th:classappend="${currentStatus?.name()} == 'PAID' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">결제완료</a>
+
+        <a th:href="@{/admin/orders(status=SHIPPED)}"
+           th:classappend="${currentStatus?.name()}  == 'SHIPPED' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">배송중</a>
+
+        <a th:href="@{/admin/orders(status=DELIVERED)}"
+           th:classappend="${currentStatus?.name()} == 'DELIVERED' ? ' btn btn-primary' : ' btn btn-outline-secondary'"
+           class="btn">배송완료</a>
+    </div>
+
+    <!-- 주문 테이블 -->
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+        <tr>
+            <th>주문 번호</th>
+            <th>주문자</th>
+            <th>고객 이메일</th>
+            <th>주문 일시</th>
+            <th>상품</th>
+            <th>총 결제 금액(전체)</th>
+            <th>배송 상태</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <!-- 버튼으로 주문 상세 조회 -->
+            <td>
+                <button type="button"
+                        class="btn btn-link p-0 order-detail-btn"
+                        th:text="${order.id}"
+                        th:data-order-id="${order.id}">
+                </button>
+            </td>
+            <td th:text="${order.customerName}"></td>
+            <td th:text="${order.email}"></td>
+            <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${order.orderProducts.size() > 0}
+                         ? ${order.orderProducts[0].product.name} + ' 외 ' + (${order.orderProducts.size()} - 1) + '개' : '상품 없음'">
+            </td>
+            <td th:text="${order.totalPrice}+ '원'" ></td>
+            <td th:text="${order.status.description}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 주문 상세 모달 -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">주문 상세</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="orderDetailContent">로딩중...</div>
+            </div>
+            <div class="modal-footer">
+                <!-- 버튼 ID는 JS와 동일하게 유지 -->
+                <button id="shipBtn" class="btn btn-primary">배송하기</button>
+                <button id="cancelBtn" class="btn btn-danger d-none">취소하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS 로드 -->
+<script src="/admin/js/order.js"></script>
+</body>
+</html>
