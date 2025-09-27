@@ -180,21 +180,27 @@
     document.querySelectorAll(".detail-btn").forEach(btn => {
         btn.addEventListener("click", function() {
             const productId = this.dataset.id;
-            const name = this.dataset.name;   // ✅ 영어 이름 그대로 사용
+            const name = this.dataset.name;
             const imageUrl = this.dataset.image;
 
-            fetch(`/products/${productId}`)
-                .then(res => res.json())
+            fetch(`/api/products/${productId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                    return res.json();
+                })
                 .then(data => {
                     document.getElementById("modalImage").src = imageUrl;
-                    document.getElementById("modalName").innerText = name; // ✅ 팝업도 영어 이름
-                    document.getElementById("modalOrigin").innerText = data.origin;
-                    document.getElementById("modalFlavor").innerText = data.flavorAroma;
-                    document.getElementById("modalFeature").innerText = data.feature;
-                    document.getElementById("modalPrice").innerText = data.price + "원";
+                    document.getElementById("modalName").innerText = name;
+                    document.getElementById("modalOrigin").innerText = data.origin ?? "상세 준비중";
+                    document.getElementById("modalFlavor").innerText = data.flavorAroma ?? "상세 준비중";
+                    document.getElementById("modalFeature").innerText = data.feature ?? "상세 준비중";
+                    document.getElementById("modalPrice").innerText = (data.price ?? 0) + "원";
                     document.getElementById("productModal").style.display = "flex";
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error(err);
+                    alert("상세 정보를 불러오지 못했습니다.");
+                });
         });
     });
 
