@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 목록</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding-top: 80px;
+            background-color: #f9f9f9;
+            margin: 0;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .product-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: 30px; /* 카드 사이 간격 */
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 250px;
+            text-align: center;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .product-card h3 {
+            margin: 15px 0 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .product-card p {
+            margin: 5px 0;
+            font-size: 15px;
+            color: #555;
+        }
+
+        .product-card button {
+            margin-top: 10px;
+            padding: 8px 15px;
+            border: none;
+            background: #fff;
+            border: 1px solid #444;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .product-card button:hover {
+            background: #f1f1f1;
+        }
+
+        .order-btn {
+            margin-top: 40px;
+            padding: 12px 25px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .order-btn:hover {
+            background: #444;
+        }
+
+        /* ✅ 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* ✅ 제목 강조 */
+        .modal-content p span {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<h1>상품 목록</h1>
+
+<!-- ✅ 상품 카드 -->
+<div class="product-container">
+    <div class="product-card" th:each="product : ${products}">
+        <img th:src="${product.imageUrl}" alt="상품 이미지">
+
+        <!-- ✅ 영어 이름으로 고정 -->
+        <h3 th:switch="${product.productId}">
+            <span th:case="1">Brazil-Serrado</span>
+            <span th:case="2">Colombia-Narino</span>
+            <span th:case="3">Colombia-Quindio</span>
+            <span th:case="4">Ethiopia-Sidamo</span>
+            <span th:case="*" th:text="${product.name}">상품명</span>
+        </h3>
+
+        <p th:text="${product.price + '원'}">가격</p>
+        <button class="detail-btn"
+                th:switch="${product.productId}"
+                th:attr="data-id=${product.productId},
+                             data-image=${product.imageUrl}"
+                th:attrappend="data-name=
+                        ${product.productId==1 ? 'Brazil-Serrado' :
+                          (product.productId==2 ? 'Colombia-Narino' :
+                          (product.productId==3 ? 'Colombia-Quindio' :
+                          (product.productId==4 ? 'Ethiopia-Sidamo' : product.name)))}">
+            상세보기
+        </button>
+    </div>
+</div>
+
+<!-- ✅ 주문 페이지 이동 버튼 -->
+<button class="order-btn" onclick="location.href='/orders'">주문하러 가기</button>
+
+<!-- ✅ 모달 구조 -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="" alt="상품 이미지">
+        <h2 id="modalName">상품 이름</h2>
+        <p><span>산지:</span> <span id="modalOrigin"></span></p>
+        <p><span>맛과 향:</span> <span id="modalFlavor"></span></p>
+        <p><span>특징:</span> <span id="modalFeature"></span></p>
+        <p><span>가격:</span> <span id="modalPrice"></span></p>
+    </div>
+</div>
+
+<script>
+    // ✅ 상세보기 버튼 이벤트 연결
+    document.querySelectorAll(".detail-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            const productId = this.dataset.id;
+            const name = this.dataset.name;
+            const imageUrl = this.dataset.image;
+
+            fetch(`/api/products/${productId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById("modalImage").src = imageUrl;
+                    document.getElementById("modalName").innerText = name;
+                    document.getElementById("modalOrigin").innerText = data.origin ?? "상세 준비중";
+                    document.getElementById("modalFlavor").innerText = data.flavorAroma ?? "상세 준비중";
+                    document.getElementById("modalFeature").innerText = data.feature ?? "상세 준비중";
+                    document.getElementById("modalPrice").innerText = (data.price ?? 0) + "원";
+                    document.getElementById("productModal").style.display = "flex";
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("상세 정보를 불러오지 못했습니다.");
+                });
+        });
+    });
+
+    // ✅ 모달 닫기 (x 버튼)
+    function closeModal() {
+        document.getElementById("productModal").style.display = "none";
+    }
+
+    // ✅ 모달 영역 클릭 시 닫기
+    window.addEventListener("click", function(event) {
+        const modal = document.getElementById("productModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+</script>
+</body>
+</html>
