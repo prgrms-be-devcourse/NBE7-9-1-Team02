@@ -23,5 +23,5 @@ public class OrderForm {
     private String address;
     private int zipcode;
     private List<OrderItemDto> orderItems; // 여러 상품 정보를 리스트로 받음
-    private int totalPrice;
+    private Long totalPrice;
 }

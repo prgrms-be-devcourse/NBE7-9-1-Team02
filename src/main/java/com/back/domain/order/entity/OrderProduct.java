@@ -31,5 +31,5 @@ public class OrderProduct {
     private Integer quantity; // 수량 필드 이름 통일
 
     @Column(name = "price")
-    private Integer price;    // 주문 당시 가격
+    private Long price;    // 주문 당시 가격
 }
