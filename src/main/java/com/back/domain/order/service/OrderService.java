@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -89,7 +90,7 @@ public class OrderService {
             throw new IllegalStateException("배송 불가 상태");
         }
         order.setStatus(OrderStatus.SHIPPED);
-        order.setShippedAt(OffsetDateTime.now(KST_OFFSET));
+        order.setShippedAt(LocalDateTime.now(ZoneOffset.ofHours(9))); // KST 기준
         return order;
     }
 
@@ -107,6 +108,20 @@ public class OrderService {
         return order;
     }
 
+    // 취소 가능 여부 판단
+    private boolean canCancelShipment(Orders order) {
+        if (order.getStatus() != OrderStatus.SHIPPED) return false;
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.ofHours(9));
+        LocalDateTime shipped = order.getShippedAt();
+        if (shipped == null) return false;
+
+        LocalDateTime scheduledDelivery = shipped.withHour(14).withMinute(0).withSecond(0).withNano(0);
+        if (shipped.toLocalTime().isAfter(LocalTime.of(14,0))) {
+            scheduledDelivery = scheduledDelivery.plusDays(1);
+        }
+        return now.isBefore(scheduledDelivery);
+    }
+
     public void deliverAllShippedOrders() {
         List<Orders> list = ordersRepository.findByStatus(OrderStatus.SHIPPED);
         for (Orders o : list) {
@@ -114,21 +129,6 @@ public class OrderService {
             log.info("배송완료 처리됨: orderId=" + o.getId());
         }
         ordersRepository.saveAll(list);
-    }
-
-    // 취소 가능 여부 판단
-    private boolean canCancelShipment(Orders order) {
-        if (order.getStatus() != OrderStatus.SHIPPED) return false;
-        OffsetDateTime now = OffsetDateTime.now(KST_OFFSET);
-        OffsetDateTime shipped = order.getShippedAt();
-        if (shipped == null) return false;
-
-        OffsetDateTime scheduledDelivery = shipped.withOffsetSameInstant(KST_OFFSET)
-                .withHour(14).withMinute(0).withSecond(0).withNano(0);
-        if (shipped.toLocalTime().isAfter(LocalTime.of(14,0))) {
-            scheduledDelivery = scheduledDelivery.plusDays(1);
-        }
-        return now.isBefore(scheduledDelivery);
     }
 }
 

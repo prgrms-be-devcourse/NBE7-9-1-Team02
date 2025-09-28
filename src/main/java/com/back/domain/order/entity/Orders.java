@@ -52,7 +52,7 @@ public class Orders {
     private LocalDateTime orderDate;
 
     @Column(name = "shipped_at")
-    private OffsetDateTime shippedAt;
+    private LocalDateTime shippedAt;
 
     public Orders(String email, String customerName, String address, Integer zipcode, Long totalPrice) {
         this.email = email;

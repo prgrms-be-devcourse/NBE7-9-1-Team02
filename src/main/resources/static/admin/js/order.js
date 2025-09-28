@@ -49,41 +49,17 @@ function loadOrderDetail(orderId) {
 
 function renderOrderDetail(order) {
     const content = document.getElementById("orderDetailContent");
-    if (!content) {
-        console.error("#orderDetailContent 요소를 찾을 수 없음!");
-        return;
-    }
     content.innerHTML = `
         <p><strong>주문번호:</strong> ${order.orderId}</p>
-        <p><strong>주문자:</strong> ${order.customerName}</p>
         <p><strong>이메일:</strong> ${order.email}</p>
-        <p><strong>주소:</strong> ${order.address}</p>
-        <p><strong>우편번호:</strong> ${order.zipcode}</p>
         <p><strong>주문일시:</strong> ${order.orderDate}</p>
         <p><strong>배송상태:</strong> <span id="orderStatus">${statusMap[order.status]}</span></p>
-        <p><strong>총 결제 금액(전체):</strong> ${order.totalPrice} 원</p>
+        <p><strong>총 금액:</strong> ${order.totalPrice} 원</p>
         <hr>
         <h5>상품 목록</h5>
-        <table class="table table-sm">
-            <thead>   
-                <tr>
-                    <th>상품명</th>
-                    <th>가격</th>
-                    <th>수량</th>
-                    <th>총액(상품별)</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${order.products.map(p => `
-                <tr>
-                    <td>${p.productName}</td>
-                    <td>${p.price}원</td>
-                    <td>${p.quantity}개</td>
-                    <td>${p.price * p.quantity}원</td>
-                </tr>
-                `).join('')}
-            </tbody>
-        </table>
+        <ul>
+            ${order.products.map(p => `<li>${p.productName} (${p.quantity}개) - ${p.price}원</li>`).join("")}
+        </ul>
     `;
 
     // 버튼 상태 업데이트
@@ -94,11 +70,11 @@ function renderOrderDetail(order) {
     shipBtn.dataset.orderId = order.orderId;
     cancelBtn.dataset.orderId = order.orderId;
 
-    if (order.status === "PAID") {
+    if(order.status === "PAID") {
         shipBtn.disabled = false;
         shipBtn.textContent = "배송하기";
         cancelBtn.classList.add("d-none");
-    } else if (order.status === "SHIPPED") {
+    } else if(order.status === "SHIPPED") {
         shipBtn.disabled = true;
         shipBtn.textContent = "처리중...";
         order.canCancel ? cancelBtn.classList.remove("d-none") : cancelBtn.classList.add("d-none");
@@ -115,11 +91,9 @@ function handleShip(orderId) {
     shipBtn.disabled = true;
     shipBtn.textContent = "처리중...";
 
-    fetch(`/admin/orders/${orderId}/ship`, {method: 'POST'})
+    fetch(`/admin/orders/${orderId}/ship`, { method: 'POST' })
         .then(res => {
-            if (!res.ok) return res.text().then(t => {
-                throw new Error(t || '응답 오류');
-            });
+            if (!res.ok) return res.text().then(t => { throw new Error(t || '응답 오류'); });
             return loadOrderDetail(orderId);
         })
         .catch(err => {
@@ -133,13 +107,11 @@ function handleShip(orderId) {
 function handleCancel(orderId) {
     const cancelBtn = document.getElementById("cancelBtn");
     cancelBtn.disabled = true;
-    cancelBtn.textContent = "처리중...";
+    cancelBtn.textContent = "취소하기";
 
-    fetch(`/admin/orders/${orderId}/cancel`, {method: 'POST'})
+    fetch(`/admin/orders/${orderId}/cancel`, { method: 'POST' })
         .then(res => {
-            if (!res.ok) return res.text().then(t => {
-                throw new Error(t || '응답 오류');
-            });
+            if (!res.ok) return res.text().then(t => { throw new Error(t || '응답 오류'); });
             return loadOrderDetail(orderId);
         })
         .catch(err => {
@@ -149,15 +121,3 @@ function handleCancel(orderId) {
             cancelBtn.textContent = "취소하기";
         });
 }
-
-/**
- * 핵심 변경점
- *
- * 1. DOMContentLoaded 안에서 버튼 UI를 직접 바꾸던 코드 제거.
- * → 대신 handleShip(orderId), handleCancel(orderId) 호출.
- *
- * 2. renderOrderDetail에서 버튼에 data-order-id 세팅.
- *
- * 3. 버튼 상태(텍스트/disabled/d-none)는 항상 renderOrderDetail에서 갱신 → 새로고침 없이도 동기화.
- *
- */
