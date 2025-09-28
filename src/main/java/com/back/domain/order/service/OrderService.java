@@ -1,5 +1,6 @@
 package com.back.domain.order.service;
 
+import com.back.domain.mapper.Mapper;
 import com.back.domain.order.dto.OrderDetailDto;
 import com.back.domain.order.dto.OrderProductDto;
 import com.back.domain.order.entity.OrderStatus;
@@ -74,14 +75,8 @@ public class OrderService {
         Order order = ordersRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
 
-        List<OrderProductDto> products = order.getOrderProducts().stream()
-                .map(op -> new OrderProductDto(op.getProduct().getProductId(), op.getProduct().getName(),
-                        op.getQuantity(), op.getProduct().getPrice()))
-                .collect(Collectors.toList());
-
         boolean canCancel = canCancelShipment(order);
-        return new OrderDetailDto(order.getId(), order.getCustomerName(), order.getEmail(), order.getAddress(), order.getZipcode(), order.getOrderDate(),
-                order.getStatus().name(), order.getTotalPrice(), products, canCancel);
+        return Mapper.toOrderDetailDto(order, canCancel);
     }
 
     // --- 배송 ---
