@@ -2,7 +2,7 @@ package com.back.domain.service;
 
 import com.back.domain.order.entity.Order;
 import com.back.domain.order.entity.OrderStatus;
-import com.back.domain.order.repository.OrdersRepository;
+import com.back.domain.order.repository.OrderRepository;
 import com.back.domain.order.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class OrderServiceTest {
     private OrderService orderService;
 
     @Autowired
-    private OrdersRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Test
     @DisplayName("14시에 배송중(SHIPPED) 주문이 배달완료(DELIVERED)로 바뀌는지")

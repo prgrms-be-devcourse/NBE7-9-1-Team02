@@ -2,7 +2,7 @@ package com.back.domain.scheduler;
 
 import com.back.domain.order.entity.Order;
 import com.back.domain.order.entity.OrderStatus;
-import com.back.domain.order.repository.OrdersRepository;
+import com.back.domain.order.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ShippingSchedulerTest {
 
     @Autowired
-    private OrdersRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
     private ShippingScheduler shippingScheduler;
