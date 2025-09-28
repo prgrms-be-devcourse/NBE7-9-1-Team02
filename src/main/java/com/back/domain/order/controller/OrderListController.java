@@ -1,8 +1,7 @@
 package com.back.domain.order.controller;
 
 import com.back.domain.order.entity.OrderStatus;
-import com.back.domain.order.entity.Orders;
-import com.back.domain.order.entity.OrderStatus;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -24,7 +23,7 @@ public class OrderListController {
     @GetMapping
     public String orderList(@RequestParam(required = false) String status, Model model){
 
-        List<Orders> orders;
+        List<Order> orders;
 
         if (status != null) {
             // 문자열로 넘어온 상태를 Enum으로 변환

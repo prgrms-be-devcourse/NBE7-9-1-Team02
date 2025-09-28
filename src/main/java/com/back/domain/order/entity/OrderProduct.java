@@ -1,7 +1,6 @@
 package com.back.domain.order.entity;
 
 import com.back.domain.product.entity.Product;
-import com.back.domain.order.entity.Orders;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,7 @@ public class OrderProduct {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Orders order; // Orders로 통일
+    private Order order; // Orders로 통일
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")

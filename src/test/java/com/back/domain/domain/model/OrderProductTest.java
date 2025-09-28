@@ -1,7 +1,7 @@
 package com.back.domain.domain.model;
 
 import com.back.domain.order.entity.OrderProduct;
-import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.repository.OrdersRepository;
 import com.back.domain.product.repository.ProductRepository;
 import com.back.domain.product.entity.Product;
@@ -38,7 +38,7 @@ class OrderProductTest {
         productRepository.save(rinse);
 
         // 2. 주문 생성
-        Orders order = new Orders();
+        Order order = new Order();
         order.setCustomerName("김민지");
         order.setEmail("test@naver.com");
         order.setOrderDate(LocalDateTime.now());
@@ -63,7 +63,7 @@ class OrderProductTest {
         orderRepository.save(order);
 
         // 4. 조회 및 상품 요약 확인
-        Orders savedOrder = orderRepository.findById(order.getId()).orElseThrow();
+        Order savedOrder = orderRepository.findById(order.getId()).orElseThrow();
 
         String summary = savedOrder.getOrderProducts().size() > 0
                 ? savedOrder.getOrderProducts().get(0).getProduct().getName() + " 외 " +

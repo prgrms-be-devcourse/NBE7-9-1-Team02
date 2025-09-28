@@ -8,7 +8,7 @@ public record OrderDetailDto(
         String customerName,
         String email,
         String address,
-        Integer zipcode,
+        String zipcode,
         LocalDateTime orderDate,
         String status,        // 문자열: PAID/SHIPPED/DELIVERED
         Long totalPrice,

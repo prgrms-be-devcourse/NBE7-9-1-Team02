@@ -3,7 +3,7 @@ package com.back.domain.order.service;
 import com.back.domain.order.dto.OrderDetailDto;
 import com.back.domain.order.dto.OrderProductDto;
 import com.back.domain.order.entity.OrderStatus;
-import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.repository.OrdersRepository;
 import com.back.domain.product.entity.Product;
 import com.back.domain.product.repository.ProductRepository;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +34,7 @@ public class OrderService {
     private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9);
 
     // --- 결제 ---
-    public Orders payment(OrderForm orderForm) {
+    public Order payment(OrderForm orderForm) {
         int totalPrice = 0;
         for (OrderItemDto item : orderForm.getOrderItems()) {
             Product product = productRepository.findById(item.getProductId())
@@ -52,32 +51,32 @@ public class OrderService {
         if (totalPrice != orderForm.getTotalPrice()) {
             throw new IllegalStateException("총 금액 불일치");
         }
-        Orders newOrder = new Orders(orderForm.getEmail(), orderForm.getCustomerName(),
+        Order newOrder = new Order(orderForm.getEmail(), orderForm.getCustomerName(),
                 orderForm.getAddress(), orderForm.getZipcode(), (long) totalPrice);
         return ordersRepository.save(newOrder);
     }
 
     // --- 주문 조회 ---
-    public Orders findOrderById(Integer orderId) {
+    public Order findOrderById(Integer orderId) {
         return ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 id=" + orderId));
     }
 
-    public List<Orders> getAllOrders() {
+    public List<Order> getAllOrders() {
         return ordersRepository.findAll();
     }
 
-    public List<Orders> getOrdersByStatus(OrderStatus status) {
+    public List<Order> getOrdersByStatus(OrderStatus status) {
         return ordersRepository.findByStatus(status);
     }
 
     public OrderDetailDto getOrderDetail(Integer orderId) {
-        Orders order = ordersRepository.findWithProductsById(orderId)
+        Order order = ordersRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
 
         List<OrderProductDto> products = order.getOrderProducts().stream()
                 .map(op -> new OrderProductDto(op.getProduct().getProductId(), op.getProduct().getName(),
-                        op.getQuantity(), op.getProduct().getPrice().longValue()))
+                        op.getQuantity(), op.getProduct().getPrice()))
                 .collect(Collectors.toList());
 
         boolean canCancel = canCancelShipment(order);
@@ -86,8 +85,8 @@ public class OrderService {
     }
 
     // --- 배송 ---
-    public Orders shipOrder(Integer orderId) {
-        Orders order = findOrderById(orderId);
+    public Order shipOrder(Integer orderId) {
+        Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.PAID) {
             throw new IllegalStateException("배송 불가 상태");
         }
@@ -97,8 +96,8 @@ public class OrderService {
     }
 
     // --- 배송 취소 ---
-    public Orders cancelShipment(Integer orderId) {
-        Orders order = findOrderById(orderId);
+    public Order cancelShipment(Integer orderId) {
+        Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.SHIPPED) {
             throw new IllegalStateException("취소 불가");
         }
@@ -111,7 +110,7 @@ public class OrderService {
     }
 
     // 취소 가능 여부 판단
-    private boolean canCancelShipment(Orders order) {
+    private boolean canCancelShipment(Order order) {
         if (order.getStatus() != OrderStatus.SHIPPED) return false;
         LocalDateTime now = LocalDateTime.now(ZoneOffset.ofHours(9));
         LocalDateTime shipped = order.getShippedAt();
@@ -125,8 +124,8 @@ public class OrderService {
     }
 
     public void deliverAllShippedOrders() {
-        List<Orders> list = ordersRepository.findByStatus(OrderStatus.SHIPPED);
-        for (Orders o : list) {
+        List<Order> list = ordersRepository.findByStatus(OrderStatus.SHIPPED);
+        for (Order o : list) {
             o.setStatus(OrderStatus.DELIVERED);
             log.info("배송완료 처리됨: orderId=" + o.getId());
         }

@@ -1,6 +1,6 @@
 package com.back.domain.scheduler;
 
-import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.entity.OrderStatus;
 import com.back.domain.order.repository.OrdersRepository;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class ShippingSchedulerTest {
     @Test
     void testDeliverShippedOrders() {
         // given - 배송중인 주문 저장
-        Orders order = new Orders();
+        Order order = new Order();
         order.setEmail("scheduler@test.com");
         order.setStatus(OrderStatus.SHIPPED);
         order.setTotalPrice(20000L);
@@ -39,7 +39,7 @@ class ShippingSchedulerTest {
         shippingScheduler.deliverShipped();
 
         // then - 상태가 DELIVERED로 변경됐는지 확인
-        Orders found = orderRepository.findById(order.getId()).orElseThrow();
+        Order found = orderRepository.findById(order.getId()).orElseThrow();
         assertThat(found.getStatus()).isEqualTo(OrderStatus.DELIVERED);
     }
 
