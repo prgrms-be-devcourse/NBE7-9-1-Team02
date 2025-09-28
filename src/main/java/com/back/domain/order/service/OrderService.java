@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class OrderService {
@@ -35,6 +34,7 @@ public class OrderService {
     private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9);
 
     // --- 결제 ---
+    @Transactional
     public Order payment(OrderForm orderForm) {
         int totalPrice = 0;
         for (OrderItemDto item : orderForm.getOrderItems()) {
@@ -58,19 +58,23 @@ public class OrderService {
     }
 
     // --- 주문 조회 ---
+    @Transactional(readOnly = true)
     public Order findOrderById(Integer orderId) {
         return ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 id=" + orderId));
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
         return ordersRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getOrdersByStatus(OrderStatus status) {
         return ordersRepository.findByStatus(status);
     }
 
+    @Transactional(readOnly = true)
     public OrderDetailDto getOrderDetail(Integer orderId) {
         Order order = ordersRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
@@ -80,6 +84,7 @@ public class OrderService {
     }
 
     // --- 배송 ---
+    @Transactional
     public Order shipOrder(Integer orderId) {
         Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.PAID) {
@@ -91,6 +96,7 @@ public class OrderService {
     }
 
     // --- 배송 취소 ---
+    @Transactional
     public Order cancelShipment(Integer orderId) {
         Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.SHIPPED) {
@@ -118,6 +124,7 @@ public class OrderService {
         return now.isBefore(scheduledDelivery);
     }
 
+    @Transactional
     public void deliverAllShippedOrders() {
         List<Order> list = ordersRepository.findByStatus(OrderStatus.SHIPPED);
         for (Order o : list) {
