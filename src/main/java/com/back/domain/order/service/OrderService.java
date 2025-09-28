@@ -30,6 +30,8 @@ public class OrderService {
     private final OrdersRepository ordersRepository;
     private final ProductRepository productRepository;
 
+    private static final int DELIVERED_TIME = 14;
+
     private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9);
 
     // --- 결제 ---
@@ -115,8 +117,8 @@ public class OrderService {
         LocalDateTime shipped = order.getShippedAt();
         if (shipped == null) return false;
 
-        LocalDateTime scheduledDelivery = shipped.withHour(14).withMinute(0).withSecond(0).withNano(0);
-        if (shipped.toLocalTime().isAfter(LocalTime.of(14,0))) {
+        LocalDateTime scheduledDelivery = shipped.withHour(DELIVERED_TIME);
+        if (shipped.toLocalTime().isAfter(LocalTime.of(DELIVERED_TIME,0))) {
             scheduledDelivery = scheduledDelivery.plusDays(1);
         }
         return now.isBefore(scheduledDelivery);
