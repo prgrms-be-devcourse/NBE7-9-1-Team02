@@ -2,7 +2,7 @@ package com.back.domain.domain.model;
 
 import com.back.domain.order.entity.OrderProduct;
 import com.back.domain.order.entity.Order;
-import com.back.domain.order.repository.OrdersRepository;
+import com.back.domain.order.repository.OrderRepository;
 import com.back.domain.product.repository.ProductRepository;
 import com.back.domain.product.entity.Product;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class OrderProductTest {
     @Autowired
-    private OrdersRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
     private ProductRepository productRepository;

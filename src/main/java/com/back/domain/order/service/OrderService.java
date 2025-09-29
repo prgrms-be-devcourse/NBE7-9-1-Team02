@@ -8,7 +8,7 @@ import com.back.domain.order.dto.OrderProductDto;
 import com.back.domain.order.entity.Order;
 import com.back.domain.order.entity.OrderProduct;
 import com.back.domain.order.entity.OrderStatus;
-import com.back.domain.order.repository.OrdersRepository;
+import com.back.domain.order.repository.OrderRepository;
 import com.back.domain.product.entity.Product;
 import com.back.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OrderService {
 
-    private final OrdersRepository ordersRepository;
+    private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
     private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9);
@@ -36,7 +36,7 @@ public class OrderService {
     @Transactional
     public Order payment(OrderForm orderForm) {
         Order newOrder = OrderMapper.toOrderEntityWithoutPrice(orderForm);
-        long totalPrice = 0;
+        Long totalPrice = 0L;
         for (OrderItemDto item : orderForm.getOrderItems()) {
             int updatedRows = productRepository.decreaseStock(item.getProductId(), item.getQuantity());
 
@@ -51,7 +51,6 @@ public class OrderService {
 
             totalPrice += product.getPrice() * item.getQuantity();
 
-
             OrderProduct orderProduct = OrderProduct.createOrderProduct(product, item.getQuantity());
             newOrder.addOrderProduct(orderProduct);
         }
@@ -61,29 +60,29 @@ public class OrderService {
         }
 
         newOrder.setTotalPrice(totalPrice);
-        return ordersRepository.save(newOrder);
+        return orderRepository.save(newOrder);
     }
 
     // --- 주문 조회 ---
     @Transactional
     public Order findOrderById(Integer orderId) {
-        return ordersRepository.findById(orderId)
+        return orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 id=" + orderId));
     }
 
     @Transactional
     public List<Order> getAllOrders() {
-        return ordersRepository.findAll();
+        return orderRepository.findAll();
     }
 
     @Transactional
     public List<Order> getOrdersByStatus(OrderStatus status) {
-        return ordersRepository.findByStatus(status);
+        return orderRepository.findByStatus(status);
     }
 
     @Transactional
     public OrderDetailDto getOrderDetail(Integer orderId) {
-        Order order = ordersRepository.findWithProductsById(orderId)
+        Order order = orderRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
 
         List<OrderProductDto> products = order.getOrderProducts().stream()
@@ -122,12 +121,12 @@ public class OrderService {
     }
 
     public void deliverAllShippedOrders() {
-        List<Order> list = ordersRepository.findByStatus(OrderStatus.SHIPPED);
+        List<Order> list = orderRepository.findByStatus(OrderStatus.SHIPPED);
         for (Order o : list) {
             o.setStatus(OrderStatus.DELIVERED);
             log.info("배송완료 처리됨: orderId=" + o.getId());
         }
-        ordersRepository.saveAll(list);
+        orderRepository.saveAll(list);
     }
 
     // 취소 가능 여부 판단

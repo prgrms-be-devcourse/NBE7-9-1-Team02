@@ -38,6 +38,65 @@
         .total-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 1.2em; font-weight: bold; }
         .checkout-btn { margin-top: 24px; width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
         .checkout-btn:hover { background-color: #218838; }
+
+        .modal {
+            display: none; /* 평소에는 숨겨 둠 */
+            position: fixed; /* 화면에 고정 */
+            z-index: 1000; /* 다른 모든 요소들 위에 있도록 설정 */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* 내용이 길어지면 스크롤 */
+            background-color: rgba(0, 0, 0, 0.6); /* 반투명 검은색 배경 */
+
+            /* Flexbox를 이용해 내용물을 수직/수평 중앙 정렬 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 2. 모달 내용물 (실제 정보가 보이는 흰색 박스) */
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            text-align: center;
+            position: relative; /* 닫기 버튼(close)을 위한 기준점 역할 */
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        /* 3. 닫기 버튼 (X) */
+        .close {
+            color: #aaaaaa;
+            position: absolute; /* modal-content를 기준으로 위치 지정 */
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 모달 내부 이미지 스타일 */
+        #modalImage {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body th:data-initial-cart-items="${initialCartItemsJson}">
@@ -348,6 +407,17 @@
                     alert("상세 정보를 불러오지 못했습니다.");
                 });
         });
+    });
+
+    function closeModal() {
+        document.getElementById("productModal").style.display = "none";
+    }
+
+    window.addEventListener("click", function(event) {
+        const modal = document.getElementById("productModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
     });
 </script>
 </body>
