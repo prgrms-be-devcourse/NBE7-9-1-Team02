@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
@@ -99,7 +98,7 @@ public class OrderService {
             throw new IllegalStateException("배송 불가 상태");
         }
         order.setStatus(OrderStatus.SHIPPED);
-        order.setShippedAt(LocalDateTime.now(ZoneOffset.ofHours(9))); // KST 기준
+        order.setShippedAt(LocalDateTime.now()); // KST 기준
         return order;
     }
 
@@ -121,7 +120,7 @@ public class OrderService {
     // 취소 가능 여부 판단
     private boolean canCancelShipment(Order order) {
         if (order.getStatus() != OrderStatus.SHIPPED) return false;
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.ofHours(9));
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime shipped = order.getShippedAt();
         if (shipped == null) return false;
 
