@@ -44,19 +44,38 @@
         .detail-item strong { color: #5d4037; }
         .product-list { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0dace; }
         .product-list h3 { text-align: left; margin-bottom: 15px; }
-        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0ebe5; }
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
         .product-item:last-child { border-bottom: none; }
-        /* [수정] 총 금액 위 구분선을 진한 브라운으로 변경 */
-        .total {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #4a2c2a;
-            font-size: 1.5em;
+
+        .item-name {
+            flex: 1; /* 이름이 남는 공간을 모두 차지하도록 설정 */
+            text-align: left; /* 왼쪽 정렬 */
+        }
+
+        /* 수량 스타일 */
+        .item-quantity {
+            width: 80px; /* 수량 영역에 고정 너비를 부여 */
+            text-align: right; /* 오른쪽 정렬 */
+        }
+
+        /* 가격 스타일 */
+        .item-price {
+            width: 120px; /* 가격 영역에 고정 너비를 부여 */
+            text-align: right; /* 오른쪽 정렬 */
             font-weight: bold;
+        }
+
+        /* 총 결제 금액 스타일도 통일감을 줍니다. */
+        .total {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
         }
-        /* [수정] '홈으로' 버튼 스타일을 orderPage의 '결제하기' 버튼과 유사하게 통일 */
+
+        /* '홈으로' 버튼 스타일을 orderPage의 '결제하기' 버튼과 유사하게 통일 */
         .home-btn {
             margin-top: 40px;
             display: inline-block;
@@ -101,16 +120,16 @@
         </div>
         <div class="detail-item">
             <strong>주문 상태</strong>
-            <span th:text="*{status}">결제완료</span>
+            <span th:text="*{status.description}">결제완료</span>
         </div>
     </div>
 
     <div class="product-list" th:if="${not #lists.isEmpty(order.orderProducts)}">
         <h3>주문 상품</h3>
         <div th:each="item : *{orderProducts}" class="product-item">
-            <span th:text="${item.product.name}">상품 이름</span>
-            <span th:text="${item.quantity} + '개'">수량</span>
-            <span th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">가격</span>
+            <span class="item-name" th:text="${item.product.name}">상품 이름</span>
+            <span class="item-quantity" th:text="${item.quantity} + '개'">수량</span>
+            <span class="item-price" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">가격</span>
         </div>
     </div>
 

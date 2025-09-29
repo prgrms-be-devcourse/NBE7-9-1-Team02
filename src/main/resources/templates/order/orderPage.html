@@ -48,18 +48,23 @@
     <section class="card product-list">
         <h2>상품 목록</h2>
         <div id="product-items-container">
-            <div th:each="product : ${products}" class="product-item"
+            <div th:each="product : ${products}" class="product-item detail-btn"
+                 style="cursor: pointer;"
                  th:data-id="${product.productId}"
                  th:data-name="${product.name}"
                  th:data-price="${product.price}"
-                 th:data-stock="${product.stock}"> <div class="product-info">
-                <img th:src="@{/img/coffee/{imageName}(imageName=${product.imageUrl})}" alt="커피콩">
-                <div class="product-details">
-                    <p class="name" th:text="${product.name}">상품 이름</p>
-                    <p class="desc"> 향긋한 원두 커피</p>
+                 th:data-stock="${product.stock}"
+                 th:data-image="${product.imageUrl}">
+
+                <div class="product-info">
+                    <img th:src="${product.imageUrl}" alt="커피콩">
+                    <div class="product-details">
+                        <p class="name" th:text="${product.name}">상품 이름</p>
+                        <p class="desc">향긋한 원두 커피</p>
+                    </div>
                 </div>
-            </div>
                 <span class="price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">5000원</span>
+
                 <button class="add-btn">추가</button>
             </div>
         </div>
@@ -95,6 +100,18 @@
             <button type="submit" class="checkout-btn">결제하기</button>
         </form>
     </aside>
+</div>
+
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="" alt="상품 이미지">
+        <h2 id="modalName">상품 이름</h2>
+        <p><span>산지:</span> <span id="modalOrigin"></span></p>
+        <p><span>맛과 향:</span> <span id="modalFlavor"></span></p>
+        <p><span>특징:</span> <span id="modalFeature"></span></p>
+        <p><span>가격:</span> <span id="modalPrice"></span></p>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -300,8 +317,38 @@
         // --- 4. 페이지 초기화 실행 ---
         initializeCart();
     });
+
+    document.querySelectorAll(".detail-btn").forEach(btn => {
+        btn.addEventListener("click", function (event) {
+            // '추가' 버튼을 눌렀을 때는 모달이 뜨지 않도록 예외 처리
+            if (event.target.classList.contains('add-btn')) {
+                return;
+            }
+
+            const productId = this.dataset.id;
+            const name = this.dataset.name;
+            const imageUrl = this.dataset.image;
+
+            fetch(`/api/products/${productId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById("modalImage").src = imageUrl;
+                    document.getElementById("modalName").innerText = name;
+                    document.getElementById("modalOrigin").innerText = data.origin ?? "상세 준비중";
+                    document.getElementById("modalFlavor").innerText = data.flavorAroma ?? "상세 준비중";
+                    document.getElementById("modalFeature").innerText = data.feature ?? "상세 준비중";
+                    document.getElementById("modalPrice").innerText = (data.price ?? 0) + "원";
+                    document.getElementById("productModal").style.display = "flex";
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("상세 정보를 불러오지 못했습니다.");
+                });
+        });
+    });
 </script>
-</body>
-</html>
 </body>
 </html>

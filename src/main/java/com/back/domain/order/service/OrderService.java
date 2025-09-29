@@ -1,14 +1,16 @@
 package com.back.domain.order.service;
 
+import com.back.domain.mapper.OrderMapper;
 import com.back.domain.order.dto.OrderDetailDto;
+import com.back.domain.order.dto.OrderForm;
+import com.back.domain.order.dto.OrderItemDto;
 import com.back.domain.order.dto.OrderProductDto;
+import com.back.domain.order.entity.Order;
+import com.back.domain.order.entity.OrderProduct;
 import com.back.domain.order.entity.OrderStatus;
-import com.back.domain.order.entity.Orders;
 import com.back.domain.order.repository.OrdersRepository;
 import com.back.domain.product.entity.Product;
 import com.back.domain.product.repository.ProductRepository;
-import com.back.domain.order.dto.OrderForm;
-import com.back.domain.order.dto.OrderItemDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class OrderService {
@@ -32,44 +33,57 @@ public class OrderService {
     private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9);
 
     // --- 결제 ---
-    public Orders payment(OrderForm orderForm) {
-        int totalPrice = 0;
+    @Transactional
+    public Order payment(OrderForm orderForm) {
+        Order newOrder = OrderMapper.toOrderEntityWithoutPrice(orderForm);
+        long totalPrice = 0;
         for (OrderItemDto item : orderForm.getOrderItems()) {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new IllegalArgumentException("상품 없음 id=" + item.getProductId()));
-            if (product.getStock() < item.getQuantity()) {
-                throw new IllegalStateException(product.getName() + " 상품의 재고가 부족합니다.");
+            int updatedRows = productRepository.decreaseStock(item.getProductId(), item.getQuantity());
+
+            //  만약 업데이트된 행이 0이라면, 재고가 부족했다는 의미
+            if (updatedRows == 0) {
+                throw new IllegalStateException("상품 ID " + item.getProductId() + "의 재고가 부족합니다.");
             }
 
-            //  재고 차감
-            product.setStock(product.getStock() - item.getQuantity());
+            //  재고 차감에 성공 -> 총액 계산을 위해 상품 정보를 조회합니다.
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("상품 없음 id=" + item.getProductId()));
 
             totalPrice += product.getPrice() * item.getQuantity();
+
+
+            OrderProduct orderProduct = OrderProduct.createOrderProduct(product, item.getQuantity());
+            newOrder.addOrderProduct(orderProduct);
         }
+
         if (totalPrice != orderForm.getTotalPrice()) {
             throw new IllegalStateException("총 금액 불일치");
         }
-        Orders newOrder = new Orders(orderForm.getEmail(), orderForm.getCustomerName(),
-                orderForm.getAddress(), orderForm.getZipcode(), (long) totalPrice);
+
+        newOrder.setTotalPrice(totalPrice);
         return ordersRepository.save(newOrder);
     }
 
     // --- 주문 조회 ---
-    public Orders findOrderById(Integer orderId) {
+    @Transactional
+    public Order findOrderById(Integer orderId) {
         return ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 id=" + orderId));
     }
 
-    public List<Orders> getAllOrders() {
+    @Transactional
+    public List<Order> getAllOrders() {
         return ordersRepository.findAll();
     }
 
-    public List<Orders> getOrdersByStatus(OrderStatus status) {
+    @Transactional
+    public List<Order> getOrdersByStatus(OrderStatus status) {
         return ordersRepository.findByStatus(status);
     }
 
+    @Transactional
     public OrderDetailDto getOrderDetail(Integer orderId) {
-        Orders order = ordersRepository.findWithProductsById(orderId)
+        Order order = ordersRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
 
         List<OrderProductDto> products = order.getOrderProducts().stream()
@@ -83,8 +97,8 @@ public class OrderService {
     }
 
     // --- 배송 ---
-    public Orders shipOrder(Integer orderId) {
-        Orders order = findOrderById(orderId);
+    public Order shipOrder(Integer orderId) {
+        Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.PAID) {
             throw new IllegalStateException("배송 불가 상태");
         }
@@ -94,8 +108,8 @@ public class OrderService {
     }
 
     // --- 배송 취소 ---
-    public Orders cancelShipment(Integer orderId) {
-        Orders order = findOrderById(orderId);
+    public Order cancelShipment(Integer orderId) {
+        Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.SHIPPED) {
             throw new IllegalStateException("취소 불가");
         }
@@ -108,8 +122,8 @@ public class OrderService {
     }
 
     public void deliverAllShippedOrders() {
-        List<Orders> list = ordersRepository.findByStatus(OrderStatus.SHIPPED);
-        for (Orders o : list) {
+        List<Order> list = ordersRepository.findByStatus(OrderStatus.SHIPPED);
+        for (Order o : list) {
             o.setStatus(OrderStatus.DELIVERED);
             log.info("배송완료 처리됨: orderId=" + o.getId());
         }
@@ -117,7 +131,7 @@ public class OrderService {
     }
 
     // 취소 가능 여부 판단
-    private boolean canCancelShipment(Orders order) {
+    private boolean canCancelShipment(Order order) {
         if (order.getStatus() != OrderStatus.SHIPPED) return false;
         OffsetDateTime now = OffsetDateTime.now(KST_OFFSET);
         OffsetDateTime shipped = order.getShippedAt();

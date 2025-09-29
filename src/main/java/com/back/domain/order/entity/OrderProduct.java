@@ -1,7 +1,6 @@
 package com.back.domain.order.entity;
 
 import com.back.domain.product.entity.Product;
-import com.back.domain.order.entity.Orders;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,7 @@ public class OrderProduct {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Orders order; // Orders로 통일
+    private Order order; // Orders로 통일
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -31,5 +30,14 @@ public class OrderProduct {
     private Integer quantity; // 수량 필드 이름 통일
 
     @Column(name = "price")
-    private Integer price;    // 주문 당시 가격
+    private Long price;    // 주문 당시 가격
+
+    public static OrderProduct createOrderProduct(Product product, int quantity) {
+        OrderProduct orderProduct = new OrderProduct();
+        orderProduct.setProduct(product);
+        orderProduct.setQuantity(quantity);
+        orderProduct.setPrice(product.getPrice()); // 주문 시점의 가격을 기록
+
+        return orderProduct;
+    }
 }

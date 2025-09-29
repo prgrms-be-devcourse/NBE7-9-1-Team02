@@ -1,6 +1,5 @@
 package com.back.domain.order.entity;
 
-import com.back.domain.order.entity.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
-public class Orders {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,13 +35,13 @@ public class Orders {
     private String address;
 
     @Column(name = "zipcode")
-    private Integer zipcode;
+    private String zipcode;
 
     @Column(name = "total_price")
     private Long totalPrice;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // Enum으로 통일
+    private OrderStatus status = OrderStatus.PAID; // Enum으로 통일
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProducts = new ArrayList<>();
@@ -54,11 +53,15 @@ public class Orders {
     @Column(name = "shipped_at")
     private OffsetDateTime shippedAt;
 
-    public Orders(String email, String customerName, String address, Integer zipcode, Long totalPrice) {
+    public Order(String email, String customerName, String address, String zipcode) {
         this.email = email;
         this.customerName = customerName;
         this.address = address;
         this.zipcode = zipcode;
-        this.totalPrice = totalPrice;
+    }
+
+    public void addOrderProduct(OrderProduct orderProduct) {
+        orderProducts.add(orderProduct);
+        orderProduct.setOrder(this);
     }
 }
