@@ -1,7 +1,7 @@
 package com.back.domain.domain.model;
 
 import com.back.domain.order.entity.OrderProduct;
-import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.repository.OrdersRepository;
 import com.back.domain.product.repository.ProductRepository;
 import com.back.domain.product.entity.Product;
@@ -27,18 +27,18 @@ class OrderProductTest {
         // 1. 상품 생성
         Product shampoo = new Product();
         shampoo.setName("샴푸");
-        shampoo.setPrice(5000);
-        shampoo.setQuantity(100);
+        shampoo.setPrice(5000L);
+        shampoo.setStock(100);
         productRepository.save(shampoo);
 
         Product rinse = new Product();
         rinse.setName("린스");
-        rinse.setPrice(3000);
-        rinse.setQuantity(100);
+        rinse.setPrice(3000L);
+        rinse.setStock(100);
         productRepository.save(rinse);
 
         // 2. 주문 생성
-        Orders order = new Orders();
+        Order order = new Order();
         order.setCustomerName("김민지");
         order.setEmail("test@naver.com");
         order.setOrderDate(LocalDateTime.now());
@@ -49,13 +49,13 @@ class OrderProductTest {
         op1.setOrder(order);
         op1.setProduct(shampoo);
         op1.setQuantity(2);
-        op1.setPrice(5000);
+        op1.setPrice(5000L);
 
         OrderProduct op2 = new OrderProduct();
         op2.setOrder(order);
         op2.setProduct(rinse);
         op2.setQuantity(1);
-        op2.setPrice(3000);
+        op2.setPrice(3000L);
 
         order.setOrderProducts(List.of(op1, op2));
 
@@ -63,7 +63,7 @@ class OrderProductTest {
         orderRepository.save(order);
 
         // 4. 조회 및 상품 요약 확인
-        Orders savedOrder = orderRepository.findById(order.getId()).orElseThrow();
+        Order savedOrder = orderRepository.findById(order.getId()).orElseThrow();
 
         String summary = savedOrder.getOrderProducts().size() > 0
                 ? savedOrder.getOrderProducts().get(0).getProduct().getName() + " 외 " +

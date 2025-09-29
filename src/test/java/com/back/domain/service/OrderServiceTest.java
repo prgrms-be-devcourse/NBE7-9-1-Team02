@@ -1,6 +1,6 @@
 package com.back.domain.service;
 
-import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.entity.OrderStatus;
 import com.back.domain.order.repository.OrdersRepository;
 import com.back.domain.order.service.OrderService;
@@ -30,7 +30,7 @@ class OrderServiceTest {
     @DisplayName("14시에 배송중(SHIPPED) 주문이 배달완료(DELIVERED)로 바뀌는지")
     void testDeliverAllShippedOrders() {
         // 1. 배송중 상태의 주문 생성
-        Orders order = new Orders();
+        Order order = new Order();
         order.setEmail("delivery@test.com");
         order.setTotalPrice(20000L);
         order.setOrderDate(LocalDateTime.now());
@@ -42,7 +42,7 @@ class OrderServiceTest {
         orderService.deliverAllShippedOrders();
 
         // 3. DB에서 다시 조회
-        Orders updatedOrder = orderRepository.findById(order.getId())
+        Order updatedOrder = orderRepository.findById(order.getId())
                 .orElseThrow();
 
         // 4. 상태 확인

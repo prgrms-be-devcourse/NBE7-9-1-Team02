@@ -19,8 +19,8 @@ class ProductRepositoryTest {
         // given
         Product product = new Product();
         product.setName("테스트 커피");
-        product.setPrice(5000);
-        product.setQuantity(100);
+        product.setPrice(5000L);
+        product.setStock(100);
 
         // when
         Product saved = productRepository.save(product);

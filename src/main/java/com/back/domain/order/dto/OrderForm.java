@@ -21,7 +21,7 @@ public class OrderForm {
 
     @NotBlank(message = "주소지는 필수 항목입니다.")
     private String address;
-    private int zipcode;
+    private String zipcode;
     private List<OrderItemDto> orderItems; // 여러 상품 정보를 리스트로 받음
-    private int totalPrice;
+    private long totalPrice;
 }

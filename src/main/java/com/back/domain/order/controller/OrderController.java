@@ -1,7 +1,7 @@
 package com.back.domain.order.controller;
 
 import com.back.domain.order.dto.OrderForm;
-import com.back.domain.order.entity.Orders;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.service.OrderService;
 import com.back.domain.product.entity.Product;
 import com.back.domain.product.service.ProductService;
@@ -62,14 +62,14 @@ public class OrderController {
         return "order/orderPage"; // 오류가 생기면 데이터를 가지고 주문페이지
         }
 
-        Orders createOrder = orderService.payment(orderForm);
+        Order createOrder = orderService.payment(orderForm);
         return "redirect:/orders/"+ createOrder.getId() + "/completed"; //올바르게 주문이 완료되면 결제완료 페이지 이동
     }
 
     @GetMapping("/{orderId}/completed")
     public String completed(@PathVariable("orderId") Integer orderId, Model model) {
 
-        Orders order = orderService.findOrderById(orderId);
+        Order order = orderService.findOrderById(orderId);
         model.addAttribute("order", order);
         return "order/completed"; // completed.html 템플릿을 렌더링
     }

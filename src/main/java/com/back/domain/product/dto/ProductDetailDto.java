@@ -12,5 +12,5 @@ public class ProductDetailDto {
     private String origin;
     private String flavorAroma;
     private String feature;
-    private Integer price;   // 팝업에 표시할 가격
+    private Long price;   // 팝업에 표시할 가격
 }
