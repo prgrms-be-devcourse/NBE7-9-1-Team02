@@ -6,40 +6,42 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        :root {
+            --cards: 4;
+            --card-w: 250px;
+            --gap: 30px;
+            --bg: #f9f5f0;
+            --text: #000;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f9f5f0;
-            color: #4a2c2a;
+            background-color: var(--bg);
+            color: var(--text);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             padding: 40px;
             margin: 0;
             min-height: 100vh;
-            flex-direction: column;
         }
 
         .page-banner {
-            width: 100%;
-            background: #f9f5f0;
-            border-top: 1px solid #e0dace;
-            border-bottom: 1px solid #e0dace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 14px 0;
-            margin: 0 0 24px 0;
-            box-shadow:
-                0 3px 8px rgba(74, 44, 42, 0.06),
-                0 -2px 6px rgba(74, 44, 42, 0.04);
+            display: inline-block;
+            background: #fff;
+            border: 1px solid #e0dace;
+            padding: 10px 20px;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(74, 44, 42, 0.06);
+            margin: 0 auto 24px auto;
         }
+
         .page-banner__title {
             margin: 0;
-            font-size: 24px;
-            font-weight: 620;
-            letter-spacing: 0.2px;
-            color: #5d4037;
-            line-height: 1.3;
+            font-size: 20px;
+            font-weight: 600;
+            color: #4a2c2a;
+            text-align: center;
         }
 
         h1 {
@@ -53,7 +55,9 @@
             display: flex;
             justify-content: center;
             flex-wrap: nowrap;
-            gap: 30px;
+            gap: var(--gap);
+            width: calc(var(--cards) * var(--card-w) + (var(--cards) - 1) * var(--gap));
+            margin: 0 auto;
         }
 
         .product-card {
@@ -61,7 +65,7 @@
             border-radius: 8px;
             border: 1px solid #e0dace;
             box-shadow: 0 4px 12px rgba(74, 44, 42, 0.08);
-            width: 250px;
+            width: var(--card-w);
             text-align: center;
             padding: 20px;
         }
@@ -77,14 +81,14 @@
             margin: 15px 0 5px;
             font-size: 18px;
             font-weight: 600;
-            color: #4a2c2a;
+            color: var(--text);
         }
 
         .product-card p {
             margin: 5px 0;
             font-size: 15px;
-            color: #4a2c2a;
-            opacity: 0.9;
+            color: var(--text);
+            opacity: 1;
         }
 
         .product-card button {
@@ -131,6 +135,7 @@
 
         .modal-content {
             background: #fff;
+            color: var(--text);
             padding: 20px;
             border-radius: 8px;
             width: 400px;
@@ -148,25 +153,34 @@
             border-radius: 5px;
         }
 
+        .modal-content h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
         .close {
             position: absolute;
             top: 20px;
             right: 25px;
             font-size: 20px;
             cursor: pointer;
-            color: whitesmoke;
+            color: var(--text);
             font-weight: bold;
         }
 
         .modal-content p span {
             font-weight: 600;
-            color: #4a2c2a;
+            color: var(--text);
         }
     </style>
 </head>
 <body>
 
-<div th:replace="~{fragments/navbar :: navbarFragment}"></div>
+<div class="page-banner">
+    <h2 class="page-banner__title">Grids & Circle</h2>
+</div>
 
 <h1>상품 목록</h1>
 
