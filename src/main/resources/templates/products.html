@@ -85,7 +85,6 @@
             background: #444;
         }
 
-        /* ✅ 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -120,7 +119,6 @@
             cursor: pointer;
         }
 
-        /* ✅ 제목 강조 */
         .modal-content p span {
             font-weight: bold;
             color: #333;
@@ -130,12 +128,10 @@
 <body>
 <h1>상품 목록</h1>
 
-<!-- ✅ 상품 카드 -->
 <div class="product-container">
     <div class="product-card" th:each="product : ${products}">
         <img th:src="${product.imageUrl}" alt="상품 이미지">
 
-        <!-- ✅ 영어 이름으로 고정 -->
         <h3 th:switch="${product.productId}">
             <span th:case="1">Brazil-Serrado</span>
             <span th:case="2">Colombia-Narino</span>
@@ -159,10 +155,8 @@
     </div>
 </div>
 
-<!-- ✅ 주문 페이지 이동 버튼 -->
 <button class="order-btn" onclick="location.href='/orders'">주문하러 가기</button>
 
-<!-- ✅ 모달 구조 -->
 <div id="productModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -176,7 +170,6 @@
 </div>
 
 <script>
-    // ✅ 상세보기 버튼 이벤트 연결
     document.querySelectorAll(".detail-btn").forEach(btn => {
         btn.addEventListener("click", function() {
             const productId = this.dataset.id;
@@ -204,12 +197,10 @@
         });
     });
 
-    // ✅ 모달 닫기 (x 버튼)
     function closeModal() {
         document.getElementById("productModal").style.display = "none";
     }
 
-    // ✅ 모달 영역 클릭 시 닫기
     window.addEventListener("click", function(event) {
         const modal = document.getElementById("productModal");
         if (event.target === modal) {
