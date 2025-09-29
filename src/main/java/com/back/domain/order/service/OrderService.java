@@ -33,8 +33,6 @@ public class OrderService {
 
     private static final int DELIVERED_TIME = 14;
 
-    private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9);
-
     // --- 결제 ---
     @Transactional
     public Order payment(OrderForm orderForm) {
