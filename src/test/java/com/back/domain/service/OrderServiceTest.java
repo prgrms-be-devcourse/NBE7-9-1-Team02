@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +35,7 @@ class OrderServiceTest {
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.SHIPPED);
         order.setShippedAt(LocalDateTime.now()); // 서울 기준
+       
         orderRepository.save(order);
 
         // 2. 14시 스케줄러 실행 (테스트에서는 직접 호출)

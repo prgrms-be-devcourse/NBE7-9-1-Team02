@@ -22,7 +22,7 @@ public class ProductController {
     public String showProducts(Model model) {
         model.addAttribute("products", productRepository.findAll());
         model.addAttribute("orderPageUrl", "/orders");
-        return "products";  // → templates/products.html
+        return "product/products";  // → templates/products.html
     }
 
     // 2) 팝업 API - JSON 반환 → 팝업

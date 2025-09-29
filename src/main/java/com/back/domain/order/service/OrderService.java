@@ -57,7 +57,7 @@ public class OrderService {
             newOrder.addOrderProduct(orderProduct);
         }
 
-        if (totalPrice != orderForm.getTotalPrice()) {
+        if (!totalPrice.equals(orderForm.getTotalPrice())) {
             throw new IllegalStateException("총 금액 불일치");
         }
         newOrder.setTotalPrice(totalPrice);
