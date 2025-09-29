@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -47,7 +49,7 @@ public class OrderController {
             Model model) {
         if(bindingResult.hasErrors()) {
             bindingResult.getAllErrors().forEach(error -> {
-                System.out.println("Validation Error: " + error.getDefaultMessage());
+                log.info("Validation Error: {}", error.getDefaultMessage());
             });
         List<Product> productList = productService.findAll();
         model.addAttribute("products", productList);
