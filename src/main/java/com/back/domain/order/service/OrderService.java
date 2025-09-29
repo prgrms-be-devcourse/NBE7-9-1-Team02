@@ -1,14 +1,18 @@
 package com.back.domain.order.service;
 
-import com.back.domain.mapper.Mapper;
+
 import com.back.domain.order.dto.OrderDetailDto;
 import com.back.domain.order.entity.OrderStatus;
 import com.back.domain.order.entity.Order;
 import com.back.domain.order.repository.OrderRepository;
-import com.back.domain.product.entity.Product;
-import com.back.domain.product.repository.ProductRepository;
+import com.back.domain.mapper.Mapper;
+import com.back.domain.mapper.OrderMapper;
 import com.back.domain.order.dto.OrderForm;
 import com.back.domain.order.dto.OrderItemDto;
+import com.back.domain.order.entity.OrderProduct;
+
+import com.back.domain.product.entity.Product;
+import com.back.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,24 +38,32 @@ public class OrderService {
     // --- 결제 ---
     @Transactional
     public Order payment(OrderForm orderForm) {
-        int totalPrice = 0;
+        Order newOrder = OrderMapper.toOrderEntityWithoutPrice(orderForm);
+        Long totalPrice = 0L;
+
         for (OrderItemDto item : orderForm.getOrderItems()) {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new IllegalArgumentException("상품 없음 id=" + item.getProductId()));
-            if (product.getStock() < item.getQuantity()) {
-                throw new IllegalStateException(product.getName() + " 상품의 재고가 부족합니다.");
+            int updatedRows = productRepository.decreaseStock(item.getProductId(), item.getQuantity());
+
+            //  만약 업데이트된 행이 0이라면, 재고가 부족했다는 의미
+            if (updatedRows == 0) {
+                throw new IllegalStateException("상품 ID " + item.getProductId() + "의 재고가 부족합니다.");
             }
 
-            //  재고 차감
-            product.setStock(product.getStock() - item.getQuantity());
+            //  재고 차감에 성공 -> 총액 계산을 위해 상품 정보를 조회합니다.
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("상품 없음 id=" + item.getProductId()));
 
             totalPrice += product.getPrice() * item.getQuantity();
+
+
+            OrderProduct orderProduct = OrderProduct.createOrderProduct(product, item.getQuantity());
+            newOrder.addOrderProduct(orderProduct);
         }
+
         if (totalPrice != orderForm.getTotalPrice()) {
             throw new IllegalStateException("총 금액 불일치");
         }
-        Order newOrder = new Order(orderForm.getEmail(), orderForm.getCustomerName(),
-                orderForm.getAddress(), orderForm.getZipcode(), (long) totalPrice);
+        newOrder.setTotalPrice(totalPrice);
         return orderRepository.save(newOrder);
     }
 

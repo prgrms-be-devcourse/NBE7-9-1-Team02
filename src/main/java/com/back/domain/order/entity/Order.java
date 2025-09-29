@@ -40,7 +40,7 @@ public class Order {
     private Long totalPrice;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // Enum으로 통일
+    private OrderStatus status = OrderStatus.PAID; // Enum으로 통일
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProducts = new ArrayList<>();
@@ -52,11 +52,16 @@ public class Order {
     @Column(name = "shipped_at")
     private LocalDateTime shippedAt;
 
-    public Order(String email, String customerName, String address, String zipcode, Long totalPrice) {
+
+    public Order(String email, String customerName, String address, String zipcode) {
         this.email = email;
         this.customerName = customerName;
         this.address = address;
         this.zipcode = zipcode;
-        this.totalPrice = totalPrice;
+    }
+
+    public void addOrderProduct(OrderProduct orderProduct) {
+        orderProducts.add(orderProduct);
+        orderProduct.setOrder(this);
     }
 }

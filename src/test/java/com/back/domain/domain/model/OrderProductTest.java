@@ -2,7 +2,11 @@ package com.back.domain.domain.model;
 
 import com.back.domain.order.entity.OrderProduct;
 import com.back.domain.order.entity.Order;
+<<<<<<< HEAD
 import com.back.domain.order.repository.OrderRepository;
+=======
+import com.back.domain.order.repository.OrdersRepository;
+>>>>>>> main
 import com.back.domain.product.repository.ProductRepository;
 import com.back.domain.product.entity.Product;
 import org.junit.jupiter.api.Test;
@@ -27,14 +31,14 @@ class OrderProductTest {
         // 1. 상품 생성
         Product shampoo = new Product();
         shampoo.setName("샴푸");
-        shampoo.setPrice(5000);
-        shampoo.setQuantity(100);
+        shampoo.setPrice(5000L);
+        shampoo.setStock(100);
         productRepository.save(shampoo);
 
         Product rinse = new Product();
         rinse.setName("린스");
-        rinse.setPrice(3000);
-        rinse.setQuantity(100);
+        rinse.setPrice(3000L);
+        rinse.setStock(100);
         productRepository.save(rinse);
 
         // 2. 주문 생성
@@ -49,13 +53,13 @@ class OrderProductTest {
         op1.setOrder(order);
         op1.setProduct(shampoo);
         op1.setQuantity(2);
-        op1.setPrice(5000);
+        op1.setPrice(5000L);
 
         OrderProduct op2 = new OrderProduct();
         op2.setOrder(order);
         op2.setProduct(rinse);
         op2.setQuantity(1);
-        op2.setPrice(3000);
+        op2.setPrice(3000L);
 
         order.setOrderProducts(List.of(op1, op2));
 

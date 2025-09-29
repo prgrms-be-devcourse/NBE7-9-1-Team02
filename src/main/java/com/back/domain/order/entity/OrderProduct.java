@@ -31,4 +31,13 @@ public class OrderProduct {
 
     @Column(name = "price")
     private Long price;    // 주문 당시 가격
+
+    public static OrderProduct createOrderProduct(Product product, int quantity) {
+        OrderProduct orderProduct = new OrderProduct();
+        orderProduct.setProduct(product);
+        orderProduct.setQuantity(quantity);
+        orderProduct.setPrice(product.getPrice()); // 주문 시점의 가격을 기록
+
+        return orderProduct;
+    }
 }

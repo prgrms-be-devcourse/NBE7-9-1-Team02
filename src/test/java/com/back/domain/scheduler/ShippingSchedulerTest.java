@@ -31,7 +31,7 @@ class ShippingSchedulerTest {
         order.setOrderDate(LocalDateTime.now());
         order.setShippedAt(OffsetDateTime.now());
         order.setAddress("아아시 야야구");
-        order.setZipcode(12345);
+        order.setZipcode("12345");
         order.setCustomerName("dkdd");
         orderRepository.save(order);
 

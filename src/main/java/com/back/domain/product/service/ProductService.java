@@ -15,7 +15,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductDetailRepository productDetailRepository;   // ✅ 상세 정보도 사용
+    private final ProductDetailRepository productDetailRepository;
 
     // 전체 조회
     public List<Product> findAll() {
@@ -32,13 +32,12 @@ public class ProductService {
         return productRepository.count();
     }
 
-    // ✅ 상품 상세 조회
+
     public ProductDetailDto getProductDetail(Integer productId) {
-        // 기본 상품 정보
         Product p = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품 없음 id=" + productId));
 
-        // 상세 정보 (없을 수도 있으니 Optional 처리)
+
         ProductDetail d = productDetailRepository.findByProduct_ProductId(productId).orElse(null);
 
         return ProductDetailDto.builder()

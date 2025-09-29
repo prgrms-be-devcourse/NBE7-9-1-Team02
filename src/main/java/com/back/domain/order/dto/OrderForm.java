@@ -25,3 +25,4 @@ public class OrderForm {
     private List<OrderItemDto> orderItems; // 여러 상품 정보를 리스트로 받음
     private Long totalPrice;
 }
+
