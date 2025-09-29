@@ -29,7 +29,7 @@ class ShippingSchedulerTest {
         order.setStatus(OrderStatus.SHIPPED);
         order.setTotalPrice(20000L);
         order.setOrderDate(LocalDateTime.now());
-        order.setShippedAt(OffsetDateTime.now());
+        order.setShippedAt(LocalDateTime.now());
         order.setAddress("아아시 야야구");
         order.setZipcode("12345");
         order.setCustomerName("dkdd");
