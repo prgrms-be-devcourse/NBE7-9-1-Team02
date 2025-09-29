@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>주문 목록</title>
+    <style>
+        body {
+            background-color: #f9f5f0 !important;
+            color: #4a2c2a !important;
+        }
+    </style>
+
     <link rel="stylesheet" type="text/css"
           th:href="@{/admin/css/bootstrap.min.css}"
           href="../../static/admin/css/bootstrap.min.css">
@@ -13,7 +20,7 @@
 <!-- navbar 추가 -->
 <div class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm mb-4">
     <div class="container-fluid justify-content-center">
-        <a class="navbar-brand" th:href="@{/admin/orders}" style="color: #4a2c2a; font-weight: 600; font-size: 1.5rem;">
+        <a class="navbar-brand" th:href="@{/product/products}" style="color: #4a2c2a; font-weight: 600; font-size: 1.5rem;">
             Grids & Circle
         </a>
     </div>

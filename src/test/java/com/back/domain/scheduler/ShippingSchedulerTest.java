@@ -41,14 +41,4 @@ class ShippingSchedulerTest {
         Order found = orderRepository.findById(order.getId()).orElseThrow();
         assertThat(found.getStatus()).isEqualTo(OrderStatus.DELIVERED);
     }
-
-    @Test
-    void testDeliverShippedDirectly() {
-        // 14시 기다릴 필요 없이 바로 실행
-        shippingScheduler.deliverShipped();
-
-        // orderService.deliverAllShippedOrders() 실행됐는지 로그/검증
-        // 예: DB 상태 확인
-        // Assertions.assertEquals(...);
-    }
 }
