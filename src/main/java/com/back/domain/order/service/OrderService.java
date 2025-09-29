@@ -1,14 +1,18 @@
 package com.back.domain.order.service;
 
-import com.back.domain.mapper.OrderMapper;
+
 import com.back.domain.order.dto.OrderDetailDto;
+import com.back.domain.order.entity.OrderStatus;
+import com.back.domain.order.entity.Order;
+import com.back.domain.order.repository.OrderRepository;
+import com.back.domain.mapper.Mapper;
+import com.back.domain.mapper.OrderMapper;
 import com.back.domain.order.dto.OrderForm;
 import com.back.domain.order.dto.OrderItemDto;
-import com.back.domain.order.dto.OrderProductDto;
-import com.back.domain.order.entity.Order;
 import com.back.domain.order.entity.OrderProduct;
 import com.back.domain.order.entity.OrderStatus;
 import com.back.domain.order.repository.OrderRepository;
+
 import com.back.domain.product.entity.Product;
 import com.back.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,8 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
+    private static final int DELIVERED_TIME = 14;
+
     private static final ZoneOffset KST_OFFSET = ZoneOffset.ofHours(9);
 
     // --- 결제 ---
@@ -37,6 +42,7 @@ public class OrderService {
     public Order payment(OrderForm orderForm) {
         Order newOrder = OrderMapper.toOrderEntityWithoutPrice(orderForm);
         Long totalPrice = 0L;
+
         for (OrderItemDto item : orderForm.getOrderItems()) {
             int updatedRows = productRepository.decreaseStock(item.getProductId(), item.getQuantity());
 
@@ -58,55 +64,50 @@ public class OrderService {
         if (totalPrice != orderForm.getTotalPrice()) {
             throw new IllegalStateException("총 금액 불일치");
         }
-
         newOrder.setTotalPrice(totalPrice);
         return orderRepository.save(newOrder);
     }
 
     // --- 주문 조회 ---
-    @Transactional
+    @Transactional(readOnly = true)
     public Order findOrderById(Integer orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 id=" + orderId));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Order> getOrdersByStatus(OrderStatus status) {
         return orderRepository.findByStatus(status);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public OrderDetailDto getOrderDetail(Integer orderId) {
         Order order = orderRepository.findWithProductsById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음: " + orderId));
 
-        List<OrderProductDto> products = order.getOrderProducts().stream()
-                .map(op -> new OrderProductDto(op.getProduct().getProductId(), op.getProduct().getName(),
-                        op.getQuantity(), op.getProduct().getPrice().longValue()))
-                .collect(Collectors.toList());
-
         boolean canCancel = canCancelShipment(order);
-        return new OrderDetailDto(order.getId(), order.getCustomerName(), order.getEmail(), order.getAddress(), order.getZipcode(), order.getOrderDate(),
-                order.getStatus().name(), order.getTotalPrice(), products, canCancel);
+        return Mapper.toOrderDetailDto(order, canCancel);
     }
 
     // --- 배송 ---
+    @Transactional
     public Order shipOrder(Integer orderId) {
         Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.PAID) {
             throw new IllegalStateException("배송 불가 상태");
         }
         order.setStatus(OrderStatus.SHIPPED);
-        order.setShippedAt(OffsetDateTime.now(KST_OFFSET));
+        order.setShippedAt(LocalDateTime.now(ZoneOffset.ofHours(9))); // KST 기준
         return order;
     }
 
     // --- 배송 취소 ---
+    @Transactional
     public Order cancelShipment(Integer orderId) {
         Order order = findOrderById(orderId);
         if (order.getStatus() != OrderStatus.SHIPPED) {
@@ -120,6 +121,21 @@ public class OrderService {
         return order;
     }
 
+    // 취소 가능 여부 판단
+    private boolean canCancelShipment(Order order) {
+        if (order.getStatus() != OrderStatus.SHIPPED) return false;
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.ofHours(9));
+        LocalDateTime shipped = order.getShippedAt();
+        if (shipped == null) return false;
+
+        LocalDateTime scheduledDelivery = shipped.withHour(DELIVERED_TIME);
+        if (shipped.toLocalTime().isAfter(LocalTime.of(DELIVERED_TIME,0))) {
+            scheduledDelivery = scheduledDelivery.plusDays(1);
+        }
+        return now.isBefore(scheduledDelivery);
+    }
+
+    @Transactional
     public void deliverAllShippedOrders() {
         List<Order> list = orderRepository.findByStatus(OrderStatus.SHIPPED);
         for (Order o : list) {
@@ -143,7 +159,7 @@ public class OrderService {
         }
         return now.isBefore(scheduledDelivery);
     }
-}
+}  
 
 /**
  * 설명(정책 정리)

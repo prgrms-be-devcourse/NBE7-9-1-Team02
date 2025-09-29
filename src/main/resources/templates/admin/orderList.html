@@ -9,12 +9,16 @@
     <script src="/admin/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<div>
-    <!-- 사이트 이름 -->
-    <div class="text-center bg-light py-3 mb-4 shadow-sm">
-        <h1 class="fw-bold text-primary">Grids & Circle</h1>
+
+<!-- navbar 추가 -->
+<div class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm mb-4">
+    <div class="container-fluid justify-content-center">
+        <a class="navbar-brand" th:href="@{/admin/orders}" style="color: #4a2c2a; font-weight: 600; font-size: 1.5rem;">
+            Grids & Circle
+        </a>
     </div>
 </div>
+
 <div class="container mt-5">
     <div class="container d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-4">주문 목록</h1>

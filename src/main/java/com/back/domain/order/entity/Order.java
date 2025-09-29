@@ -8,7 +8,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +50,8 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Column(name = "shipped_at")
-    private OffsetDateTime shippedAt;
+    private LocalDateTime shippedAt;
+
 
     public Order(String email, String customerName, String address, String zipcode) {
         this.email = email;
